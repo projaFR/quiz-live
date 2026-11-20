@@ -1,22 +1,130 @@
 {
- "id":"demo","theme":"rencontre","title":"Démo Quiz Live","titleHtml":"Démo <span>Quiz Live</span>",
- "tagline":"Une petite partie pour essayer tous les types de questions : sondage, estimation, classement et nuage de mots.",
- "rulesNote":"Partie de démonstration : sondage, estimation, classement, nuage de mots",
- "finishNote":"Ces types de questions peuvent être utilisés dans n’importe quel quiz.",
- "winner":"Champion de la démo !","winnerLine":"{nick} remporte la démo.","podiumTitle":"Le podium de la démo",
- "nickPlaceholder":"Ton pseudo","gallery":["bulle","loupe","trophee","podium","eleve","heart"],"avatars":["bulle","loupe","trophee","podium","eleve","heart"],"lobbyArt":"bulle",
- "rounds":[
-  {"title":"Le sondage","text":"Pas de bonne ou de mauvaise réponse : les votes s’affichent en direct.","art":"bulle","tint":"#fff3c4"},
-  {"title":"Trouver un nombre","text":"Tapez votre estimation. Plus vous êtes proche, plus vous marquez.","art":"loupe","tint":"#dff0ff"},
-  {"title":"Remettre dans l’ordre","text":"Touchez les étiquettes dans le bon ordre, puis validez.","art":"podium","tint":"#e6f7ec"},
-  {"title":"Le nuage de mots","text":"Un mot ou deux : le nuage grandit en direct sur le grand écran.","art":"heart","tint":"#ffe0e8"}
+ "id": "demo",
+ "theme": "rencontre",
+ "title": "Démo Quiz Live",
+ "titleHtml": "Démo <span>Quiz Live</span>",
+ "tagline": "Une petite partie pour essayer tous les types de questions : sondage, estimation, classement et nuage de mots.",
+ "rulesNote": "Partie de démonstration : sondage, estimation, classement, nuage de mots",
+ "finishNote": "Ces types de questions peuvent être utilisés dans n’importe quel quiz.",
+ "winner": "Champion de la démo !",
+ "winnerLine": "{nick} remporte la démo.",
+ "podiumTitle": "Le podium de la démo",
+ "nickPlaceholder": "Ton pseudo",
+ "gallery": [
+  "bulle",
+  "loupe",
+  "trophee",
+  "podium",
+  "eleve",
+  "heart"
  ],
- "questions":[
-  {"round":1,"art":"bulle","name":"La promo","sub":"sondage","bio":"« Avouez tout, on ne juge pas. »","type":"poll","ask":"Chez vous, vous triez vos déchets…","options":["Toujours","Souvent","Parfois","Jamais"],"time":20},
-  {"round":2,"art":"loupe","name":"Les erreurs de tri","sub":"Grand Nancy, bilan 2025","bio":"« On se glisse au tri alors qu’on n’a rien à y faire. »","type":"number","ask":"Quel pourcentage d’erreurs de tri dans les emballages du Grand Nancy en 2025 ?","answer":14.2,"unit":"%","tolerance":0.6,"why":"14,2 % en 2025 : environ un déchet sur sept déposé avec les emballages n’avait rien à y faire."},
-  {"round":2,"art":"trophee","name":"Les ordures ménagères","sub":"20 ans de régime","bio":"« J’ai beaucoup maigri, et j’en suis fière. »","type":"number","ask":"En 20 ans, les ordures ménagères du Grand Nancy sont passées de 100 000 tonnes par an à combien ?","answer":69000,"unit":"tonnes","tolerance":0.4,"why":"69 000 tonnes par an, à population équivalente, selon la Métropole (chiffre de 2020)."},
-  {"round":3,"art":"podium","name":"Le voyage d’un emballage","sub":"de la cuisine à l’usine","bio":"« Je fais du chemin avant de renaître. »","type":"order","ask":"Remettez dans l’ordre le voyage d’un emballage","items":["Je le dépose dans l’écosac","Le camion le collecte","Le centre de tri le sépare par matière","L’usine le recycle","Il devient un nouvel objet"],"time":40,"why":"Du geste de tri à l’usine de recyclage, chaque étape compte : une erreur au début peut faire refuser tout un lot."},
-  {"round":4,"art":"heart","name":"Le mot de la fin","sub":"nuage de mots","bio":"« Résumez-moi en un mot. »","type":"cloud","ask":"Un mot pour résumer ce quiz ?","time":30}
+ "avatars": [
+  "bulle",
+  "loupe",
+  "trophee",
+  "heart"
  ],
- "sources":["Métropole du Grand Nancy – guide du tri (mhdd.grandnancy.eu)","Métropole du Grand Nancy – dossier de presse déchets 2020"]
+ "lobbyArt": "bulle",
+ "rounds": [
+  {
+   "title": "Le sondage",
+   "text": "Pas de bonne ou de mauvaise réponse : les votes s’affichent en direct.",
+   "art": "bulle",
+   "tint": "#fff3c4"
+  },
+  {
+   "title": "Trouver un nombre",
+   "text": "Tapez votre estimation. Plus vous êtes proche, plus vous marquez.",
+   "art": "loupe",
+   "tint": "#dff0ff"
+  },
+  {
+   "title": "Remettre dans l’ordre",
+   "text": "Touchez les étiquettes dans le bon ordre, puis validez.",
+   "art": "podium",
+   "tint": "#e6f7ec"
+  },
+  {
+   "title": "Le nuage de mots",
+   "text": "Un mot ou deux : le nuage grandit en direct sur le grand écran.",
+   "art": "heart",
+   "tint": "#ffe0e8"
+  }
+ ],
+ "questions": [
+  {
+   "round": 1,
+   "art": "bulle",
+   "name": "La promo",
+   "sub": "sondage",
+   "bio": "« Avouez tout, on ne juge pas. »",
+   "type": "poll",
+   "ask": "Chez vous, vous triez vos déchets…",
+   "options": [
+    "Toujours",
+    "Souvent",
+    "Parfois",
+    "Jamais"
+   ],
+   "time": 20
+  },
+  {
+   "round": 2,
+   "art": "loupe",
+   "name": "Les erreurs de tri",
+   "sub": "Grand Nancy, bilan 2025",
+   "bio": "« On se glisse au tri alors qu’on n’a rien à y faire. »",
+   "type": "number",
+   "ask": "Quel pourcentage d’erreurs de tri dans les emballages du Grand Nancy en 2025 ?",
+   "answer": 14.2,
+   "unit": "%",
+   "tolerance": 0.6,
+   "why": "14,2 % en 2025 : environ un déchet sur sept déposé avec les emballages n’avait rien à y faire."
+  },
+  {
+   "round": 2,
+   "art": "trophee",
+   "name": "Les ordures ménagères",
+   "sub": "20 ans de régime",
+   "bio": "« J’ai beaucoup maigri, et j’en suis fière. »",
+   "type": "number",
+   "ask": "En 20 ans, les ordures ménagères du Grand Nancy sont passées de 100 000 tonnes par an à combien ?",
+   "answer": 69000,
+   "unit": "tonnes",
+   "tolerance": 0.4,
+   "why": "69 000 tonnes par an, à population équivalente, selon la Métropole (chiffre de 2020)."
+  },
+  {
+   "round": 3,
+   "art": "podium",
+   "name": "Le voyage d’un emballage",
+   "sub": "de la cuisine à l’usine",
+   "bio": "« Je fais du chemin avant de renaître. »",
+   "type": "order",
+   "ask": "Remettez dans l’ordre le voyage d’un emballage",
+   "items": [
+    "Je le dépose dans l’écosac",
+    "Le camion le collecte",
+    "Le centre de tri le sépare par matière",
+    "L’usine le recycle",
+    "Il devient un nouvel objet"
+   ],
+   "time": 40,
+   "why": "Du geste de tri à l’usine de recyclage, chaque étape compte : une erreur au début peut faire refuser tout un lot."
+  },
+  {
+   "round": 4,
+   "art": "heart",
+   "name": "Le mot de la fin",
+   "sub": "nuage de mots",
+   "bio": "« Résumez-moi en un mot. »",
+   "type": "cloud",
+   "ask": "Un mot pour résumer ce quiz ?",
+   "time": 30
+  }
+ ],
+ "sources": [
+  "Métropole du Grand Nancy – guide du tri (mhdd.grandnancy.eu)",
+  "Métropole du Grand Nancy – dossier de presse déchets 2020"
+ ]
 }

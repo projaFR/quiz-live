@@ -161,7 +161,7 @@ def export_wooclap(quiz, path):
     wb.save(path)
 
 BASE_AV = ['fille1', 'garcon1', 'fille2', 'garcon2', 'fille3', 'garcon3', 'fille4', 'garcon4', 'fille5', 'garcon5', 'fille6', 'garcon6', 'chat', 'chien', 'renard', 'panda', 'hibou', 'dino', 'alien', 'robot', 'fantome', 'etoile', 'nuage', 'cactus', 'donut', 'fusee']
-GENERIC_AV = ['bulle', 'heart', 'trophee', 'loupe', 'podium', 'eleve']
+GENERIC_AV = ['bulle', 'heart', 'trophee', 'loupe']  # pas 'eleve' (doublon de garcon1) ni 'podium'
 
 def all_ids():
     return sorted(d for d in os.listdir(os.path.join(ROOT, 'quizzes')) if os.path.exists(os.path.join(ROOT, 'quizzes', d, 'quiz.json')))
