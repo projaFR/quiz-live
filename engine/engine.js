@@ -220,14 +220,15 @@ function joinForm(code){
   app.innerHTML=`<section class="center join">${logo}<h2>${esc(W.profileTitle)}</h2><p>Partie <b>${esc(code)}</b>. ${esc(W.profileText)}</p>
   <div class="me">${avatar(av,'avbig')}</div>
   <form id="nf"><input class="pseudo" id="nk" maxlength="20" value="${esc(P.nick||store.get('ql-nick')||'')}" placeholder="${esc(QUIZ.nickPlaceholder||'Ton pseudo')}" aria-label="Pseudo" required>
-  <div class="lbl">Ton avatar</div><div class="avpick">${AVS.map(k=>`<button type="button" class="avb${k===av.k?' sel':''}" data-k="${k}" aria-label="${k}">${drawArt(k)}</button>`).join('')}</div>
+  <div class="lbl">Ton avatar <small>(${AVS.length} au choix, fais défiler ↓)</small></div><div class="avpick">${AVS.map(k=>`<button type="button" class="avb${k===av.k?' sel':''}" data-k="${k}" aria-label="${k}">${drawArt(k)}</button>`).join('')}</div>
   <div class="lbl">Ta couleur</div><div class="colpick">${AVC.map((c,i)=>`<button type="button" class="colb${i===av.c?' sel':''}" data-c="${i}" style="background:${c}" aria-label="Couleur ${i+1}"></button>`).join('')}</div>
   <p class="net small"><b>Pense à couper le wifi</b> : le jeu marche en 4G ou 5G.</p>${fsOk()?`<label class="fsj"><input type="checkbox" id="fsj" checked> Jouer en plein écran</label>`:''}
-  <button class="big">${esc(W.go)}</button></form></section>`;
+  <div class="gobar"><p class="scrollhint" id="sh">↓ Fais défiler pour voir tous les avatars</p><button class="big">${esc(W.go)}</button></div></form></section>`;
+  const sh=$('#sh'),hide=()=>{if(sh&&window.scrollY+innerHeight>=document.body.scrollHeight-80)sh.classList.add('off')};window.onscroll=hide;hide();
   const keep=()=>{P.nick=$('#nk').value};
   document.querySelectorAll('.avb').forEach(b=>b.onclick=()=>{keep();av.k=b.dataset.k;draw()});
   document.querySelectorAll('.colb').forEach(b=>b.onclick=()=>{keep();av.c=+b.dataset.c;draw()});
-  $('#nf').onsubmit=e=>{e.preventDefault();P.nick=$('#nk').value.trim().slice(0,20)||'Anonyme';P.av=av;store.set('ql-nick',P.nick);store.set(KEY+'av',JSON.stringify(av));keepAwake();if(fsOk()&&!isFs()&&$('#fsj')&&$('#fsj').checked)toggleFS();playerConnect()};
+  $('#nf').onsubmit=e=>{e.preventDefault();window.onscroll=null;P.nick=$('#nk').value.trim().slice(0,20)||'Anonyme';P.av=av;store.set('ql-nick',P.nick);store.set(KEY+'av',JSON.stringify(av));keepAwake();if(fsOk()&&!isFs()&&$('#fsj')&&$('#fsj').checked)toggleFS();playerConnect()};
  };
  draw();
 }
