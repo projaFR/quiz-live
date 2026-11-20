@@ -160,6 +160,7 @@ def export_wooclap(quiz, path):
     ws.column_dimensions['B'].width = 70
     wb.save(path)
 
+BASE_AV = ['chat', 'chien', 'renard', 'panda', 'hibou', 'dino', 'alien', 'robot', 'fantome', 'etoile', 'nuage', 'cactus', 'donut', 'fusee']
 GENERIC_AV = ['bulle', 'heart', 'trophee', 'loupe', 'podium', 'eleve']
 
 def all_ids():
@@ -185,7 +186,7 @@ def build(qid):
     engine = rd('engine', 'engine.js')
     others = [json.load(open(os.path.join(ROOT, 'quizzes', i, 'quiz.json'), encoding='utf-8')).get('avatars', []) for i in all_ids() if i != qid]
     av = []
-    for k in quiz.get('avatars', []) + [x for o in others for x in o] + GENERIC_AV:
+    for k in BASE_AV + quiz.get('avatars', []) + [x for o in others for x in o] + GENERIC_AV:
         if k not in av: av.append(k)
     quiz = {**quiz, 'avatars': av}
     data = 'const QUIZ=' + json.dumps(quiz, ensure_ascii=False) + ';\nconst THEME=' + json.dumps(theme, ensure_ascii=False) + ';\n'

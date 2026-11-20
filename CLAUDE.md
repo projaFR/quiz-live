@@ -11,7 +11,7 @@ Publié sur GitHub Pages : https://projafr.github.io/quiz-live/ (catalogue) et h
 - `engine/vendor/` : qrcode-generator 1.4.4 et PeerJS 1.5.4 (embarqués, pas de CDN).
 - `themes/<nom>.css` (variables) + `themes/<nom>.json` (police Google Fonts, `logoArt`, `goodArt`, `badArt`, `words` : tous les textes d'ambiance).
 - `quizzes/<id>/quiz.json` : le contenu. `quizzes/<id>/art.js` : les personnages du quiz (`Object.assign(ART,{nom:()=>svg(...)})`, ou `ART.nom=()=>...`).
-- Avatars partagés : `build.py` embarque les dessins de TOUS les quiz dans chaque page, et la liste d'avatars proposée = avatars du quiz + ceux des autres quiz + génériques. Donner des noms de dessins uniques entre quiz (le build avertit en cas de doublon).
+- Avatars partagés : `build.py` embarque les dessins de TOUS les quiz dans chaque page, et la liste d'avatars proposée = 14 avatars de base en tête (`BASE_AV` dans build.py : chat, chien, renard, panda, hibou, dino, alien, robot, fantome, etoile, nuage, cactus, donut, fusee, dessinés dans engine/art.js) + avatars du quiz + ceux des autres quiz + génériques. Donner des noms de dessins uniques entre quiz (le build avertit en cas de doublon).
 - `<id>/index.html` et `index.html` : GÉNÉRÉS par `tools/build.py`. Ne jamais les modifier à la main.
 
 ## Format de quiz.json
