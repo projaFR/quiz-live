@@ -30,7 +30,7 @@ function optsOf(q){
  return (q.options||[]).map((o,i)=>({v:String(i),label:o}));
 }
 const NOPTS=t=>t==='poll'||t==='cloud';
-const fmtNum=n=>Number(n).toLocaleString('fr-FR',{maximumFractionDigits:2});
+const fmtNum=n=>Number(n).toLocaleString('fr-FR',{maximumFractionDigits:2,useGrouping:Math.abs(n)>=10000});
 const unitOf=q=>q.unit?(/^[%°]/.test(q.unit)?' ':' ')+q.unit:'';
 function shuffleFor(i,n){const a=[...Array(n).keys()];let x=(i+1)*9301+49297;for(let k=n-1;k>0;k--){x=(x*9301+49297)%233280;const j=Math.floor(x/233280*(k+1));[a[k],a[j]]=[a[j],a[k]]}if(a.every((v,k)=>v===k))a.push(a.shift());return a}
 const goodLabel=q=>q.type==='number'?fmtNum(q.answer)+unitOf(q):q.type==='order'?q.items.join(' → '):NOPTS(q.type)?'':optsOf(q).find(o=>o.v===String(q.answer)).label;

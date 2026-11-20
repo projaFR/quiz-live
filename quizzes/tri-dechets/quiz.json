@@ -88,8 +88,14 @@
  },
  "rounds": [
   {
+   "title": "Échauffement",
+   "text": "Pas de bonne réponse ici : on fait connaissance. Les réponses de la salle s’affichent en direct. Toutes les questions suivantes suivent les consignes de tri de la Métropole du Grand Nancy.",
+   "art": "yaourt",
+   "tint": "#fff3c4"
+  },
+  {
    "title": "C’est un match ?",
-   "text": "Chaque déchet a rempli son profil. À vous de lui trouver la poubelle de ses rêves. Les réponses suivent les consignes de tri de la Métropole du Grand Nancy.",
+   "text": "Chaque déchet a rempli son profil. À vous de lui trouver la poubelle de ses rêves.",
    "art": "pizza",
    "tint": "#fff3c4"
   },
@@ -100,10 +106,17 @@
    "tint": "#ffe0e8"
   },
   {
-   "title": "Côté coulisses",
-   "text": "Ce qui se passe après la poubelle, ici et ailleurs.",
+   "title": "Le saviez-vous ?",
+   "text": "Trois questions sur ce qui se passe après la poubelle, ici et ailleurs.",
    "art": "camion",
    "tint": "#dff0ff"
+  },
+  {
+   "title": "Côté coulisses, en chiffres",
+   "text": "Tapez votre estimation sur votre téléphone. Plus vous êtes proche, plus vous marquez.",
+   "art": "loupe",
+   "tint": "#dff0ff",
+   "time": 30
   },
   {
    "title": "Coach en séduction",
@@ -116,11 +129,33 @@
    "text": "Question finale. Les points comptent double.",
    "art": "capsule",
    "tint": "#fff3c4"
+  },
+  {
+   "title": "Le mot de la fin",
+   "text": "Un mot ou deux pour résumer ce quiz. Le nuage grandit en direct.",
+   "art": "heart",
+   "tint": "#ffe0e8"
   }
  ],
  "questions": [
   {
    "round": 1,
+   "art": "yaourt",
+   "name": "La promo",
+   "sub": "sondage",
+   "bio": "« Avouez tout, on ne juge pas. »",
+   "type": "poll",
+   "ask": "Chez vous, vous triez vos déchets…",
+   "options": [
+    "Toujours",
+    "Souvent",
+    "Parfois",
+    "Jamais"
+   ],
+   "time": 20
+  },
+  {
+   "round": 2,
    "art": "pizza",
    "name": "Boîte à pizza",
    "sub": "2 jours",
@@ -137,7 +172,7 @@
    "why": "Tous les emballages se trient, carton à pizza taché compris. On enlève juste les restes de pizza, et la boîte part avec les emballages."
   },
   {
-   "round": 1,
+   "round": 2,
    "art": "yaourt",
    "name": "Pot de yaourt",
    "sub": "1 semaine",
@@ -154,7 +189,7 @@
    "why": "Les pots de yaourt et de crème sont des emballages comme les autres. Pas besoin de le laver : bien vidé, ça suffit."
   },
   {
-   "round": 1,
+   "round": 2,
    "art": "journal",
    "name": "Prospectus",
    "sub": "distribué ce matin",
@@ -171,7 +206,7 @@
    "why": "Au Grand Nancy, les papiers ont leur propre conteneur : feuilles, publicités, journaux, magazines, enveloppes et même tickets de caisse. Ils ne vont pas avec les emballages."
   },
   {
-   "round": 1,
+   "round": 2,
    "art": "verre",
    "name": "Verre à vin",
    "sub": "brisé hier soir",
@@ -188,7 +223,7 @@
    "why": "Raté ! Au conteneur à verre, seuls les emballages en verre sont acceptés : pas de vaisselle, de vases, de miroirs ni d’ampoules. La vaisselle cassée va aux ordures ménagères."
   },
   {
-   "round": 1,
+   "round": 2,
    "art": "bocal",
    "name": "Pot de confiture",
    "sub": "vidé ce matin",
@@ -205,7 +240,7 @@
    "why": "Conteneur à verre, sans le laver, mais sans son couvercle : on retire couvercles, bouchons et capsules. Le couvercle en métal part avec les emballages."
   },
   {
-   "round": 1,
+   "round": 2,
    "art": "banane",
    "name": "Peau de banane",
    "sub": "48 heures",
@@ -222,7 +257,7 @@
    "why": "Déchets alimentaires : composteur ou borne selon votre quartier. Dans les bornes, presque tous les restes sont acceptés, même la viande et le poisson. Mais pas de sac, même « biodégradable »."
   },
   {
-   "round": 1,
+   "round": 2,
    "art": "couche",
    "name": "Couche usagée",
    "sub": "du jour",
@@ -239,7 +274,7 @@
    "why": "Ordures ménagères : protections hygiéniques jetables, mouchoirs, cotons-tiges, litière… c’est ce qui reste une fois que tout le reste a été trié."
   },
   {
-   "round": 1,
+   "round": 2,
    "art": "pile",
    "name": "Pile AA",
    "sub": "à plat",
@@ -256,7 +291,7 @@
    "why": "Point de collecte ! Piles, médicaments, produits toxiques et objets électroniques sont interdits aux ordures ménagères. Direction les bacs des magasins ou la déchetterie."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "vin",
    "name": "Bouteille de vin",
    "sub": "vide depuis samedi",
@@ -266,7 +301,7 @@
    "why": "ici, on retire couvercles, bouchons et capsules avant le conteneur à verre. La capsule en métal part avec les emballages."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "parfum",
    "name": "Flacon de parfum",
    "sub": "vide, mais toujours chic",
@@ -276,7 +311,7 @@
    "why": "le flacon de parfum est un emballage en verre, il a toute sa place au conteneur à verre."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "journal",
    "name": "Journal de la semaine",
    "sub": "lu de A à Z",
@@ -286,7 +321,7 @@
    "why": "quelques agrafes ou points de colle ne posent aucun problème pour le recyclage du papier."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "cornichon",
    "name": "Bocal de cornichons",
    "sub": "vide",
@@ -296,7 +331,7 @@
    "why": "on ne lave pas les emballages, on les vide. L’eau est précieuse."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "gobelets",
    "name": "Les gobelets",
    "sub": "inséparables",
@@ -306,7 +341,7 @@
    "why": "on n’imbrique pas les emballages les uns dans les autres, sinon le centre de tri ne peut pas les séparer. On les dépose un par un."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "ecosac",
    "name": "Écosac jaune",
    "sub": "patient",
@@ -316,7 +351,7 @@
    "why": "la consigne est de remplir complètement les écosacs avant de les sortir. Moins de sacs, moins de plastique, moins de passages."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "cereales",
    "name": "Boîte de céréales",
    "sub": "format familial",
@@ -326,7 +361,7 @@
    "why": "au Grand Nancy, les cartons sont interdits dans le conteneur papiers. Même fins, ils se trient avec les emballages."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "pizza",
    "name": "Grand carton",
    "sub": "livré hier",
@@ -336,7 +371,7 @@
    "why": "un carton trop grand se découpe en morceaux ou s’apporte en déchetterie. Et les cartons, on les aplatit."
   },
   {
-   "round": 2,
+   "round": 3,
    "art": "vin",
    "name": "Bouteille de rosé",
    "sub": "soirée terminée",
@@ -346,7 +381,7 @@
    "why": "il est interdit de déposer du verre dans les conteneurs entre 22 h et 7 h. Les voisins vous remercient."
   },
   {
-   "round": 3,
+   "round": 4,
    "art": "bouteille",
    "name": "Bouteille d’eau",
    "sub": "1,5 L",
@@ -363,24 +398,7 @@
    "why": "Le Grand Nancy demande d’écraser les bouteilles en plastique, mais pas n’importe comment : dans la longueur, puis on referme le bouchon, qui reste attaché à la bouteille depuis 2024 : surtout pas besoin de l’arracher. Écrasée en accordéon dans la hauteur, elle forme une boule que les machines du centre de tri reconnaissent mal."
   },
   {
-   "round": 3,
-   "art": "camion",
-   "name": "Le tri au Grand Nancy",
-   "sub": "pionnier",
-   "bio": "« J’ai simplifié mes règles avant tout le monde. »",
-   "ask": "Depuis quand tous les emballages se trient-ils au Grand Nancy ?",
-   "type": "choice",
-   "options": [
-    "2015",
-    "Novembre 2020",
-    "Janvier 2023",
-    "Janvier 2025"
-   ],
-   "answer": 1,
-   "why": "Depuis le 1er novembre 2020. Le Grand Nancy a fait partie des premières grandes métropoles à franchir le pas, plus de deux ans avant la généralisation nationale de 2023."
-  },
-  {
-   "round": 3,
+   "round": 4,
    "art": "podium",
    "name": "Les règles du tri",
    "sub": "en tournée en France",
@@ -397,41 +415,7 @@
    "why": "Depuis 2023, tous les emballages se trient partout en France. Le reste dépend des collectivités : ailleurs, les papiers vont souvent avec les emballages, certaines villes préfèrent des bouteilles non écrasées, et Citeo conseille même de laisser les bouchons sur les bouteilles en verre."
   },
   {
-   "round": 3,
-   "art": "loupe",
-   "name": "Les erreurs de tri",
-   "sub": "bilan 2025",
-   "bio": "« On se glisse au tri alors qu’on n’a rien à y faire. »",
-   "ask": "Quel était le taux d’erreurs de tri (refus) sur les emballages du Grand Nancy en 2025 ?",
-   "type": "choice",
-   "options": [
-    "2 %",
-    "6 %",
-    "10 %",
-    "14 %"
-   ],
-   "answer": 3,
-   "why": "14,2 % en 2025 : environ un déchet sur sept déposé avec les emballages n’avait rien à y faire."
-  },
-  {
-   "round": 3,
-   "art": "trophee",
-   "name": "Les ordures ménagères",
-   "sub": "20 ans de régime",
-   "bio": "« J’ai beaucoup maigri, et j’en suis fière. »",
-   "ask": "En 20 ans, les ordures ménagères du Grand Nancy sont passées de 100 000 tonnes par an à… ?",
-   "type": "choice",
-   "options": [
-    "95 000 t",
-    "69 000 t",
-    "40 000 t",
-    "12 000 t"
-   ],
-   "answer": 1,
-   "why": "69 000 tonnes par an, à population équivalente, selon la Métropole (chiffre de 2020). Une baisse de près d’un tiers."
-  },
-  {
-   "round": 3,
+   "round": 4,
    "art": "camion",
    "name": "Le camion du tri",
    "sub": "tournée longue distance",
@@ -448,7 +432,48 @@
    "why": "En Alsace : la chaîne de tri du centre Paprec de Dieulouard, qui traitait nos emballages, a brûlé en novembre 2025."
   },
   {
-   "round": 4,
+   "art": "camion",
+   "name": "Le tri au Grand Nancy",
+   "sub": "pionnier",
+   "bio": "« J’ai simplifié mes règles avant tout le monde. »",
+   "round": 5,
+   "type": "number",
+   "ask": "En quelle année tous les emballages ont-ils commencé à se trier au Grand Nancy ?",
+   "answer": 2020,
+   "tolerance": 0.0015,
+   "time": 30,
+   "why": "Le 1er novembre 2020. Le Grand Nancy a fait partie des premières grandes métropoles à franchir le pas, plus de deux ans avant la généralisation nationale de 2023."
+  },
+  {
+   "art": "loupe",
+   "name": "Les erreurs de tri",
+   "sub": "bilan 2025",
+   "bio": "« On se glisse au tri alors qu’on n’a rien à y faire. »",
+   "round": 5,
+   "type": "number",
+   "ask": "Quel pourcentage d’erreurs de tri dans les emballages du Grand Nancy en 2025 ?",
+   "answer": 14.2,
+   "unit": "%",
+   "tolerance": 0.6,
+   "time": 30,
+   "why": "14,2 % en 2025 : environ un déchet sur sept déposé avec les emballages n’avait rien à y faire."
+  },
+  {
+   "art": "trophee",
+   "name": "Les ordures ménagères",
+   "sub": "20 ans de régime",
+   "bio": "« J’ai beaucoup maigri, et j’en suis fière. »",
+   "round": 5,
+   "type": "number",
+   "ask": "En 20 ans, les ordures ménagères du Grand Nancy sont passées de 100 000 tonnes par an à combien ?",
+   "answer": 69000,
+   "unit": "tonnes",
+   "tolerance": 0.4,
+   "time": 30,
+   "why": "69 000 tonnes par an, à population équivalente, selon la Métropole (chiffre de 2020). Une baisse de près d’un tiers."
+  },
+  {
+   "round": 6,
    "art": "eleve",
    "name": "Léo",
    "sub": "CE1",
@@ -466,7 +491,7 @@
    "why": "Le jaune accueille les emballages en carton, plastique et métal, pas les objets : une brosse à dents, un jouet ou une casserole sont refusés. Bonne situation-problème : faire trier une caisse d’objets en plastique variés."
   },
   {
-   "round": 4,
+   "round": 6,
    "art": "eleve",
    "artArgs": [
     "#1b1b1b",
@@ -489,7 +514,7 @@
    "why": "Rendre visibles les coulisses du tri donne du sens au geste : vidéo, visite, schéma du trajet d’un déchet. Piste locale : la Maison de l’Habitat et du Développement Durable propose des actions de sensibilisation."
   },
   {
-   "round": 5,
+   "round": 7,
    "art": "capsule",
    "name": "Capsule de café",
    "sub": "en aluminium",
@@ -505,6 +530,16 @@
    "double": true,
    "time": 30,
    "why": "Au Grand Nancy, les capsules de café en aluminium vont avec les emballages, comme les films aluminium et les aérosols. Ailleurs en France, ça peut dépendre de la commune : en cas de doute, le guide du tri local répond."
+  },
+  {
+   "round": 8,
+   "art": "heart",
+   "name": "Le mot de la fin",
+   "sub": "nuage de mots",
+   "bio": "« Résumez-moi en un mot. »",
+   "type": "cloud",
+   "ask": "Un mot pour résumer ce quiz ?",
+   "time": 30
   }
  ],
  "sources": [
