@@ -1,0 +1,11 @@
+{
+ "fonts":"https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap",
+ "logoArt":"heart","goodArt":"heart","badArt":"broken",
+ "words":{
+  "correct":"C’est un match !","wrong":"Râteau…","late":"Trop tard…","online":"En ligne",
+  "profileTitle":"Crée ton profil","profileText":"Ton pseudo et ton avatar s’afficheront sur le grand écran : soigne ta première impression.",
+  "inRoom":"Tu es dans la salle !","inRoomText":"Ton pseudo s’affiche sur le grand écran. La partie va bientôt commencer.",
+  "board":"Classement","podium":"Le grand final","endNeutral":"Fin des rencontres","podiumPlayer":"Sur le podium !",
+  "go":"C’est parti","sent":"Réponse envoyée !","watch":"Regarde le grand écran."
+ }
+}
