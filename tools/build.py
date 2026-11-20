@@ -10,6 +10,11 @@ Usage : python3 tools/build.py            (tous les quiz)
 Le script vérifie chaque quiz avant de construire et s'arrête sur la première erreur.
 """
 import hashlib, html, json, os, re, sys
+try:
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
+except ImportError:
+    openpyxl = None
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 rd = lambda *p: open(os.path.join(ROOT, *p), encoding='utf-8').read()
@@ -59,6 +64,58 @@ def check(quiz, keys, theme_dir):
         if not q.get('why'): err.append(f'{where} : explication (why) manquante')
     return err
 
+
+def kahoot_text(q, quiz):
+    """Texte autonome de la question pour Kahoot (sans la carte illustrée)."""
+    asks = q.get('ask') or (quiz.get('swipe', {}).get('ask') if q['type'] == 'swipe' else 'Quelle est la bonne réponse ?')
+    name, bio = q.get('name', ''), q.get('bio', '')
+    if q['type'] == 'swipe':
+        t = f"{name} : {bio}" if bio else name
+        if len(t + ' ' + asks) <= 120: t = t + ' ' + asks
+    elif q.get('ask') and q['type'] == 'choice':
+        t = asks
+    else:
+        t = f"{name} : {asks}" if name else asks
+    return t
+
+def export_kahoot(quiz, path):
+    """Fichier au format du modèle d'import Kahoot (en-têtes ligne 8, questions dès la ligne 9, colonnes B à H)."""
+    if openpyxl is None:
+        print('  (export Kahoot ignoré : openpyxl absent)'); return []
+    warn = []
+    wb = openpyxl.Workbook(); ws = wb.active; ws.title = 'Kahoot'
+    F, B = Font(name='Arial', size=11), Font(name='Arial', size=11, bold=True)
+    ws['B2'] = f"{quiz['title']} – à importer dans Kahoot (Créer > Kahoot > Importer un tableur)"; ws['B2'].font = Font(name='Arial', size=14, bold=True)
+    ws['B3'] = 'Généré automatiquement par Quiz Live. Les illustrations sont à ajouter à la main dans Kahoot.'; ws['B3'].font = F
+    heads = ['Question - max 120 characters', 'Answer 1 - max 75 characters', 'Answer 2 - max 75 characters', 'Answer 3 - max 75 characters', 'Answer 4 - max 75 characters', 'Time limit (sec) – 5, 10, 20, 30, 60, 90, 120, or 240 secs', 'Correct answer(s) - choose at least one']
+    for j, h in enumerate(heads):
+        c = ws.cell(8, 2 + j, h); c.font = B; c.fill = PatternFill('solid', fgColor='FFCF33'); c.alignment = Alignment(wrap_text=True, vertical='center')
+    ok_times = [5, 10, 20, 30, 60, 90, 120, 240]
+    w2 = wb.create_sheet('Explications'); 
+    for j, h in enumerate(['N°', 'Question', 'Bonne réponse', 'Explication à lire']): c = w2.cell(1, 1 + j, h); c.font = B
+    for n, q in enumerate(quiz['questions'], 1):
+        if q['type'] == 'swipe':
+            sw = {**quiz.get('swipe', {}), **quiz['rounds'][q['round'] - 1].get('swipe', {}), **q.get('swipe', {})}
+            opts = [sw['left']['label'], sw['right']['label']]; cor = 1 if q['answer'] == 'left' else 2
+        elif q['type'] == 'icons':
+            opts = [quiz['icons'][k]['label'] for k in q['options']]; cor = q['options'].index(q['answer']) + 1
+        else:
+            opts = list(q['options']); cor = q['answer'] + 1
+        t = kahoot_text(q, quiz)
+        if len(t) > 120: warn.append(f'question {n} : {len(t)} caractères (> 120), à raccourcir dans Kahoot')
+        sec = min(ok_times, key=lambda x: abs(x - (q.get('time') or quiz['rounds'][q['round'] - 1].get('time') or quiz.get('time') or 20)))
+        row = [t] + opts + [None] * (4 - len(opts)) + [sec, str(cor)]
+        ws.cell(8 + n, 1, n).font = F
+        for j, v in enumerate(row):
+            c = ws.cell(8 + n, 2 + j, v); c.font = F; c.alignment = Alignment(wrap_text=True, vertical='top')
+        for j, v in enumerate([n, t, opts[cor - 1], q.get('why', '')]):
+            c = w2.cell(1 + n, 1 + j, v); c.font = F; c.alignment = Alignment(wrap_text=True, vertical='top')
+    for col, w in zip('ABCDEFGH', [5, 60, 28, 28, 28, 28, 16, 16]): ws.column_dimensions[col].width = w
+    for col, w in zip('ABCD', [5, 60, 28, 90]): w2.column_dimensions[col].width = w
+    ws.row_dimensions[8].height = 45
+    wb.save(path)
+    return warn
+
 def build(qid):
     qdir = os.path.join(ROOT, 'quizzes', qid)
     quiz = json.load(open(os.path.join(qdir, 'quiz.json'), encoding='utf-8'))
@@ -99,11 +156,14 @@ def build(qid):
 '''
     os.makedirs(os.path.join(ROOT, qid), exist_ok=True)
     open(os.path.join(ROOT, qid, 'index.html'), 'w', encoding='utf-8').write(page)
-    print(f'✓ {qid} : {len(quiz["questions"])} questions, {len(quiz["rounds"])} manches, version {ver}')
+    kw = export_kahoot(quiz, os.path.join(ROOT, qid, 'kahoot.xlsx'))
+    print(f'✓ {qid} : {len(quiz["questions"])} questions, {len(quiz["rounds"])} manches, version {ver} (+ kahoot.xlsx)')
+    for w in kw: print('  ! Kahoot :', w)
     return quiz
 
 def catalog(quizzes):
     cards = '\n'.join(f'''<a class="card" href="{q['id']}/"><b>{html.escape(q['title'])}</b><span>{html.escape(q.get('tagline', ''))}</span><small>{len(q['questions'])} questions · thème {html.escape(q['theme'])}</small></a>''' for q in quizzes)
+    kl = ' · '.join(f'''<a href="{q['id']}/kahoot.xlsx">{html.escape(q['title'])}</a>''' for q in quizzes)
     page = f'''<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Quiz Live</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
@@ -114,9 +174,9 @@ h1{{font:700 clamp(44px,8vw,80px)/1 Fredoka,sans-serif;color:#ffcf33;margin:0 0 
 p{{color:#d9ece2;max-width:36em}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:28px}}
 .card{{background:#fff;color:#16241e;border-radius:22px;padding:20px;text-decoration:none;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 0 rgba(0,0,0,.2);transition:transform .15s}}
-.card:hover{{transform:translateY(-4px)}}.card b{{font:700 26px Fredoka,sans-serif}}.card small{{color:#5b6b63}}
+.card:hover{{transform:translateY(-4px)}}.card b{{font:700 26px Fredoka,sans-serif}}.card small{{color:#5b6b63}}.dl{{margin-top:28px;font-size:15px}}.dl a{{color:#ffcf33}}
 </style></head><body><main><h1>Quiz Live</h1><p>Des quiz en direct : le grand écran présente, les téléphones répondent, le classement tombe en direct. Choisissez un quiz.</p>
-<div class="grid">{cards}</div></main></body></html>
+<div class="grid">{cards}</div><p class="dl">Version Kahoot (fichier à importer dans Kahoot) : {kl}</p></main></body></html>
 '''
     open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(page)
     print(f'✓ catalogue : {len(quizzes)} quiz')

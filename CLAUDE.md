@@ -36,6 +36,11 @@ Champs principaux : `id`, `theme`, `title`, `titleHtml` (option, `<span>` = 2e c
 2. Test complet : `cd tools && npm install` (une fois), puis `CHROME=/usr/bin/google-chrome python3 tools/test_live.py <id>` (serveur PeerJS local + 3 joueurs simulés ; captures /tmp/ql-*.png). Regarder les captures.
 3. Commit + push sur `main` : GitHub Pages publie en 1 à 2 minutes. Rappeler à Thibaut de faire Ctrl+F5 sur le grand écran (cache jusqu'à 10 min) et de vérifier la version affichée dans la salle d'attente.
 
+## Kahoot (dans les deux sens)
+- Export : `build.py` produit aussi `<id>/kahoot.xlsx` (modèle d'import Kahoot : en-têtes ligne 8, colonnes B à H ; swipe → 2 réponses ; onglet « Explications »). Lien dans le catalogue. Kahoot n'importe ni les images ni les explications. Il signale les questions > 120 caractères.
+- Import : `python3 tools/import_kahoot.py <fichier.xlsx> <id> "Titre"` crée un brouillon `quizzes/<id>/quiz.json` (questions à choix, manches de 6, personnage générique `bulle`, explication minimale). Accepte le modèle Kahoot et, en principe, le rapport de résultats Kahoot (détection des en-têtes Question / Answer 1-4 / Correct) : si le rapport n'est pas reconnu, adapter `find_table` sur le vrai fichier. Ensuite enrichir : personnages, bios, explications vérifiées, manches et types variés.
+- Besoin d'`openpyxl` (préinstallé dans l'environnement de Claude).
+
 ## À savoir
 - Connexion : PeerJS cloud (0.peerjs.com) + STUN Google/Cloudflare + TURN PeerJS. Le wifi de la fac bloque les liaisons entre appareils : consigne « coupez le wifi, jouez en 4G/5G » affichée partout.
 - L'identifiant de partie est `quizlive-<id>-<code>` : plusieurs quiz peuvent tourner en même temps.
