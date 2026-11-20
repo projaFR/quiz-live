@@ -12,7 +12,37 @@ const face=(x,y,m='smile',g=14)=>{
 };
 const sh=(rx=58)=>`<ellipse cx="100" cy="178" rx="${rx}" ry="8" fill="#000" opacity=".16"/>`;
 const svg=b=>`<svg viewBox="0 0 200 190" aria-hidden="true">${b}</svg>`;
+/* Personnage (enfant) paramétrable : peau, cheveux, coiffure, haut, accessoires. */
+const perso=o=>{const sk=o.sk,hc=o.hc||'#4a2c1a',st=o.hair||'court';let back='',front='',acc='';
+ const cap=`<path d="M56 88 Q54 44 100 44 Q146 44 144 88 Q128 64 100 68 Q72 64 56 88Z" fill="${hc}" ${S}/>`;
+ if(st==='long')back=`<path d="M52 94 Q50 40 100 40 Q150 40 148 94 V156 Q124 164 100 152 Q76 164 52 156Z" fill="${hc}" ${S}/>`;
+ if(st==='boucles')back=[[64,58],[100,44],[136,58],[148,90],[142,122],[58,122],[52,90]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="26" fill="${hc}" ${S}/>`).join('')+`<circle cx="100" cy="88" r="52" fill="${hc}"/>`;
+ if(st==='tresses')back=[58,142].map(x=>`<rect x="${x-9}" y="86" width="18" height="76" rx="9" fill="${hc}" ${S}/><path d="M${x-8} 112 H${x+8} M${x-8} 132 H${x+8}" stroke="#1b1b1b" stroke-width="2.5"/><circle cx="${x}" cy="166" r="6" fill="${o.acc||'#ff4f79'}" ${S}/>`).join('');
+ if(st==='minibouclettes')front=[[60,82],[66,64],[80,52],[100,48],[120,52],[134,64],[140,82]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="13" fill="${hc}" ${S}/>`).join('')+`<path d="M60 84 Q62 56 100 56 Q138 56 140 84 Q124 68 100 70 Q76 68 60 84Z" fill="${hc}"/>`;
+ if(st==='chignon')back=`<circle cx="100" cy="42" r="20" fill="${hc}" ${S}/>`;
+ if(st==='couettes')back=`<circle cx="50" cy="98" r="19" fill="${hc}" ${S}/><circle cx="150" cy="98" r="19" fill="${hc}" ${S}/>`;
+ if(st==='foulard')back=`<path d="M44 102 Q40 32 100 30 Q160 32 156 102 Q160 152 132 170 H68 Q40 152 44 102Z" fill="${o.acc}" ${S}/>`;
+ if(['court','long','tresses','chignon','couettes','boucles'].includes(st))front=cap;
+ if(st==='frange')front=`<path d="M56 96 Q50 42 100 42 Q150 42 144 96 Q142 78 128 76 Q114 84 100 76 Q84 84 70 76 Q58 80 56 96Z" fill="${hc}" ${S}/>`;
+ if(st==='foulard')front=`<path d="M58 86 Q62 52 100 52 Q138 52 142 86 Q124 66 100 66 Q76 66 58 86Z" fill="${o.acc}" ${S}/>`;
+ if(st==='casquette')front=`<path d="M56 82 Q58 40 100 40 Q142 40 144 82Z" fill="${o.acc}" ${S}/><path d="M100 82 H158 Q166 82 160 90 H100Z" fill="${o.acc}" ${S}/>`;
+ if(o.lunettes)acc+=`<circle cx="85" cy="92" r="11" fill="none" stroke="#1b1b1b" stroke-width="3.5"/><circle cx="115" cy="92" r="11" fill="none" stroke="#1b1b1b" stroke-width="3.5"/><path d="M96 91 H104" stroke="#1b1b1b" stroke-width="3.5"/>`;
+ if(o.rousseur)acc+=[[76,104],[82,108],[72,110],[124,104],[118,108],[128,110]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.8" fill="#a0522d"/>`).join('');
+ return svg(sh(56)+back+`<path d="M48 186 Q48 136 100 136 Q152 136 152 186Z" fill="${o.haut}" ${S}/><rect x="90" y="124" width="20" height="18" fill="${sk}"/><circle cx="100" cy="94" r="42" fill="${sk}" ${S}/>`+front+face(100,92,o.humeur||'smile',15)+acc)};
 const ART={
+/* ---- Filles et garçons ---- */
+fille1:()=>perso({sk:'#f6d7c3',hc:'#e8c26b',hair:'long',haut:'#ff8fab'}),
+fille2:()=>perso({sk:'#8d5524',hc:'#1b1b1b',hair:'boucles',haut:'#ffcf33',humeur:'grin'}),
+fille3:()=>perso({sk:'#5c3a21',hc:'#1b1b1b',hair:'tresses',haut:'#5dbb63',acc:'#ffcf33'}),
+fille4:()=>perso({sk:'#d9a273',hair:'foulard',acc:'#8e6bd6',haut:'#7cc4ff'}),
+fille5:()=>perso({sk:'#f2c8a0',hc:'#4a2c1a',hair:'chignon',haut:'#ffb347',lunettes:true}),
+fille6:()=>perso({sk:'#f6d7c3',hc:'#b5502b',hair:'couettes',haut:'#2fa3a0',rousseur:true,humeur:'grin'}),
+garcon1:()=>perso({sk:'#f2c8a0',hc:'#6b3e1f',hair:'court',haut:'#2b7de9'}),
+garcon2:()=>perso({sk:'#8d5524',hc:'#1b1b1b',hair:'minibouclettes',haut:'#ff8a3d',humeur:'grin'}),
+garcon3:()=>perso({sk:'#5c3a21',hair:'crane',haut:'#5dbb63',lunettes:true}),
+garcon4:()=>perso({sk:'#d9a273',hair:'casquette',acc:'#e21b3c',haut:'#ffcf33'}),
+garcon5:()=>perso({sk:'#b97a4c',hc:'#1b1b1b',hair:'frange',haut:'#8e6bd6',lunettes:true}),
+garcon6:()=>perso({sk:'#f6d7c3',hc:'#b5502b',hair:'frange',haut:'#2fa3a0',rousseur:true}),
 /* ---- Avatars de base, communs à tous les quiz ---- */
 chat:()=>svg(sh(52)+`<path d="M50 74 L56 24 L94 58Z" fill="#ffb347" ${S}/><path d="M150 74 L144 24 L106 58Z" fill="#ffb347" ${S}/><circle cx="100" cy="106" r="62" fill="#ffb347" ${S}/><path d="M60 56 L62 36 L80 52Z M140 56 L138 36 L120 52Z" fill="#ff8fab"/><path d="M36 112 H66 M38 126 H66 M134 112 H164 M134 126 H162" stroke="#1b1b1b" stroke-width="2.5" stroke-linecap="round"/>`+face(100,100,'smile',20)),
 chien:()=>svg(sh(52)+`<ellipse cx="50" cy="96" rx="22" ry="42" fill="#7a4a2b" transform="rotate(18 50 96)" ${S}/><ellipse cx="150" cy="96" rx="22" ry="42" fill="#7a4a2b" transform="rotate(-18 150 96)" ${S}/><circle cx="100" cy="102" r="58" fill="#c98f62" ${S}/><ellipse cx="100" cy="130" rx="28" ry="20" fill="#f2d6b8"/><ellipse cx="100" cy="120" rx="10" ry="7" fill="#1b1b1b"/>`+eyes(100,92,20)+`<path d="M90 136 Q100 144 110 136" fill="none" ${S} stroke-linecap="round"/>`),

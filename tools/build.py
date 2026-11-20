@@ -160,7 +160,7 @@ def export_wooclap(quiz, path):
     ws.column_dimensions['B'].width = 70
     wb.save(path)
 
-BASE_AV = ['chat', 'chien', 'renard', 'panda', 'hibou', 'dino', 'alien', 'robot', 'fantome', 'etoile', 'nuage', 'cactus', 'donut', 'fusee']
+BASE_AV = ['fille1', 'garcon1', 'fille2', 'garcon2', 'fille3', 'garcon3', 'fille4', 'garcon4', 'fille5', 'garcon5', 'fille6', 'garcon6', 'chat', 'chien', 'renard', 'panda', 'hibou', 'dino', 'alien', 'robot', 'fantome', 'etoile', 'nuage', 'cactus', 'donut', 'fusee']
 GENERIC_AV = ['bulle', 'heart', 'trophee', 'loupe', 'podium', 'eleve']
 
 def all_ids():
