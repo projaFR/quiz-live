@@ -58,10 +58,25 @@ def check(quiz, keys, theme_dir):
             if not isinstance(q.get('answer'), int) or not 0 <= q['answer'] < len(o): err.append(f'{where} : answer doit être l’index de la bonne option')
             for x in o:
                 if len(x) > 75: err.append(f'{where} : option trop longue ({len(x)} > 75) : {x}')
+        elif t == 'number':
+            if not isinstance(q.get('answer'), (int, float)): err.append(f'{where} : answer doit être un nombre')
+            if 'tolerance' in q and not 0 < q['tolerance'] <= 5: err.append(f'{where} : tolerance entre 0 et 5 (0.5 = 50 % d’écart → 0 point)')
+        elif t == 'poll':
+            o = q.get('options', [])
+            if not 2 <= len(o) <= 4: err.append(f'{where} : 2 à 4 options')
+            for x in o:
+                if len(x) > 75: err.append(f'{where} : option trop longue : {x}')
+        elif t == 'cloud':
+            pass
+        elif t == 'order':
+            it = q.get('items', [])
+            if not 3 <= len(it) <= 6: err.append(f'{where} : 3 à 6 étiquettes (items), dans le bon ordre')
+            for x in it:
+                if len(x) > 60: err.append(f'{where} : étiquette trop longue : {x}')
         else:
-            err.append(f'{where} : type inconnu {t!r} (choice, icons ou swipe)')
+            err.append(f'{where} : type inconnu {t!r} (choice, icons, swipe, number, poll, cloud, order)')
         if len(q.get('ask', '')) > 120: err.append(f'{where} : question trop longue (> 120)')
-        if not q.get('why'): err.append(f'{where} : explication (why) manquante')
+        if not q.get('why') and t not in ('poll', 'cloud'): err.append(f'{where} : explication (why) manquante')
     return err
 
 
@@ -93,7 +108,11 @@ def export_kahoot(quiz, path):
     ok_times = [5, 10, 20, 30, 60, 90, 120, 240]
     w2 = wb.create_sheet('Explications'); 
     for j, h in enumerate(['N°', 'Question', 'Bonne réponse', 'Explication à lire']): c = w2.cell(1, 1 + j, h); c.font = B
-    for n, q in enumerate(quiz['questions'], 1):
+    n = 0
+    for q in quiz['questions']:
+        if q['type'] in ('number', 'poll', 'cloud', 'order'):
+            warn.append(f"« {q.get('name', '')} » ({q['type']}) non exporté : Kahoot n’importe que des QCM"); continue
+        n += 1
         if q['type'] == 'swipe':
             sw = {**quiz.get('swipe', {}), **quiz['rounds'][q['round'] - 1].get('swipe', {}), **q.get('swipe', {})}
             opts = [sw['left']['label'], sw['right']['label']]; cor = 1 if q['answer'] == 'left' else 2
@@ -130,8 +149,14 @@ def export_wooclap(quiz, path):
     wb = openpyxl.Workbook(); ws = wb.active; ws.title = 'Questions'
     ws.append(['Type', 'Title', 'Correct'] + ['Choice'] * 7)
     for q in quiz['questions']:
-        opts, cor = answers_of(q, quiz)
-        ws.append(['MCQ', kahoot_text(q, quiz, maxlen=400), str(cor)] + opts)
+        t = kahoot_text(q, quiz, maxlen=400)
+        if q['type'] == 'number': ws.append(['GuessNumber', t, str(q['answer'])])
+        elif q['type'] == 'poll': ws.append(['Poll', t, ''] + list(q['options']))
+        elif q['type'] == 'cloud': ws.append(['OpenQuestion', t])
+        elif q['type'] == 'order': ws.append(['Sorting', t, None] + list(q['items']))
+        else:
+            opts, cor = answers_of(q, quiz)
+            ws.append(['MCQ', t, str(cor)] + opts)
     ws.column_dimensions['B'].width = 70
     wb.save(path)
 
@@ -183,7 +208,8 @@ def build(qid):
 
 def catalog(quizzes):
     cards = '\n'.join(f'''<a class="card" href="{q['id']}/"><b>{html.escape(q['title'])}</b><span>{html.escape(q.get('tagline', ''))}</span><small>{len(q['questions'])} questions · thème {html.escape(q['theme'])}</small></a>''' for q in quizzes)
-    kl = ' · '.join(f'''{html.escape(q['title'])} : <a href="{q['id']}/kahoot.xlsx">Kahoot</a> / <a href="{q['id']}/wooclap.xlsx">Wooclap</a>''' for q in quizzes)
+    qcm = lambda q: any(x['type'] in ('choice', 'icons', 'swipe') for x in q['questions'])
+    kl = ' · '.join(f'''{html.escape(q['title'])} : ''' + (f'''<a href="{q['id']}/kahoot.xlsx">Kahoot</a> / ''' if qcm(q) else '') + f'''<a href="{q['id']}/wooclap.xlsx">Wooclap</a>''' for q in quizzes)
     page = f'''<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Quiz Live</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">

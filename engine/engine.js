@@ -21,15 +21,32 @@ const NR=QUIZ.rounds.length;
 const LIM=q=>(q.time||R(q.round).time||QUIZ.time||20)*1000;
 const COLS=['#e21b3c','#1368ce','#d89e00','#26890c'];
 const SW=q=>Object.assign({},QUIZ.swipe||{},R(q.round).swipe||{},q.swipe||{});
-const ask=q=>q.ask||(q.type==='swipe'?(SW(q).ask||'Gauche ou droite ?'):'Quelle est la bonne réponse ?');
+const ask=q=>q.ask||(q.type==='swipe'?(SW(q).ask||'Gauche ou droite ?'):q.type==='number'?'Quel est le bon chiffre ?':q.type==='order'?'Remettez dans l’ordre':q.type==='cloud'?'Un mot pour le dire ?':q.type==='poll'?'Et vous ?':'Quelle est la bonne réponse ?');
 const drawArt=(k,args)=>ART[k]?ART[k](...(args||[])):'';
 const iconOf=d=>d.icon==='bin'?bin(d.color):d.icon==='flag'?flagSvg(d.color):d.icon&&ART[d.icon]?ART[d.icon]():'';
 function optsOf(q){
  if(q.type==='icons')return q.options.map(k=>{const d=QUIZ.icons[k];return{v:k,label:d.label,sub:d.sub,icon:iconOf(d)}});
  if(q.type==='swipe'){const s=SW(q);return['left','right'].map(v=>({v,label:s[v].label,icon:iconOf(s[v]),stamp:s[v].stamp,color:s[v].color}))}
- return q.options.map((o,i)=>({v:String(i),label:o}));
+ return (q.options||[]).map((o,i)=>({v:String(i),label:o}));
 }
-const goodLabel=q=>optsOf(q).find(o=>o.v===String(q.answer)).label;
+const NOPTS=t=>t==='poll'||t==='cloud';
+const fmtNum=n=>Number(n).toLocaleString('fr-FR',{maximumFractionDigits:2});
+const unitOf=q=>q.unit?(/^[%°]/.test(q.unit)?' ':' ')+q.unit:'';
+function shuffleFor(i,n){const a=[...Array(n).keys()];let x=(i+1)*9301+49297;for(let k=n-1;k>0;k--){x=(x*9301+49297)%233280;const j=Math.floor(x/233280*(k+1));[a[k],a[j]]=[a[j],a[k]]}if(a.every((v,k)=>v===k))a.push(a.shift());return a}
+const goodLabel=q=>q.type==='number'?fmtNum(q.answer)+unitOf(q):q.type==='order'?q.items.join(' → '):NOPTS(q.type)?'':optsOf(q).find(o=>o.v===String(q.answer)).label;
+function validAns(q,v){
+ if(q.type==='number'){const n=Number(String(v).replace(',','.'));return Number.isFinite(n)?n:null}
+ if(q.type==='cloud'){const w=String(v||'').replace(/\s+/g,' ').trim().slice(0,25);return w||null}
+ if(q.type==='order'){if(!Array.isArray(v)||v.length!==q.items.length)return null;const s=[...v].map(Number).sort((a,b)=>a-b);return s.every((x,k)=>x===k)?v.map(Number):null}
+ const sv=String(v);return optsOf(q).some(o=>o.v===sv)?sv:null;
+}
+function gainOf(q,a,lim){
+ if(!a||NOPTS(q.type))return 0;const m=q.double?2:1,sp=1-.5*Math.min(a.ms,lim)/lim;
+ if(q.type==='number'){const tol=q.tolerance||.5,err=Math.abs(a.v-q.answer)/Math.max(Math.abs(q.answer),1e-9);return Math.round(1000*Math.max(0,1-err/tol))*m}
+ if(q.type==='order'){const c=a.v.filter((x,k)=>x===k).length,n=q.items.length;return(c===n?Math.round(1000*sp):Math.round(600*c/n))*m}
+ return a.v===String(q.answer)?Math.round(1000*sp)*m:0;
+}
+function cloudHtml(words){const c={};words.forEach(w=>{const k=w.toLowerCase();c[k]=c[k]||{w,n:0};c[k].n++});const l=Object.values(c).sort((a,b)=>b.n-a.n).slice(0,40);if(!l.length)return '<p class="hint">Les mots apparaîtront ici…</p>';const mx=l[0].n;const cols=['#ffcf33','#ff8fab','#7cc4ff','#8be0a4','#c9a7ff','#ffb347'];return l.map((x,k)=>`<span style="font-size:${Math.round(18+38*x.n/mx)}px;color:${cols[k%6]}">${esc(x.w)}</span>`).join(' ')}
 const artOf=q=>drawArt(q.art,q.artArgs);
 const AVS=(QUIZ.avatars||[]).filter(k=>ART[k]);
 const AVC=['#ffcf33','#ff8fab','#7cc4ff','#8be0a4','#c9a7ff','#ffb347'];
@@ -96,12 +113,16 @@ function hostData(c,d){
  }
  if(d.t==='ans'){
   const p=H.players.get(c.pid);if(!p||H.phase!=='q'||d.i!==H.i||p.ans[H.i])return;
-  const q=Q[H.i],v=String(d.v);if(!optsOf(q).some(o=>o.v===v))return;
-  p.ans[H.i]={v,ms:Date.now()-H.t0};send(p,{t:'got',i:H.i});hostCount();
+  const q=Q[H.i],v=validAns(q,d.v);if(v===null)return;
+  p.ans[H.i]={v,ms:Date.now()-H.t0};send(p,{t:'got',i:H.i});hostCount();live();
   const on=[...H.players.values()].filter(x=>x.conn&&x.conn.open),qi=H.i;
   if(on.length&&on.every(x=>x.ans[H.i]))setTimeout(()=>{if(H.phase==='q'&&H.i===qi)reveal()},600);
  }
 }
+function live(){const q=Q[H.i];if(H.phase!=='q')return;const as=[...H.players.values()].map(p=>p.ans[H.i]).filter(Boolean);
+ if(q.type==='poll'){const tot=as.length;document.querySelectorAll('.opt').forEach(e=>{const n=as.filter(a=>a.v===e.dataset.v).length;e.querySelector('.bar i').style.width=(tot?n/tot*100:0)+'%';e.querySelector('.nb').textContent=n})}
+ if(q.type==='cloud'){const c=$('#cloud');if(c)c.innerHTML=cloudHtml(as.map(a=>a.v))}
+ if(q.type==='number'){const b=$('#bn');if(b)b.textContent=as.length?as.length+' estimation'+(as.length>1?'s':''):'?'}}
 function send(p,m){try{if(p.conn&&p.conn.open)p.conn.send(m)}catch(e){}}
 function bc(fn){H.players.forEach(p=>send(p,fn(p)))}
 function ranked(){return [...H.players.values()].sort((a,b)=>b.score-a.score)}
@@ -134,9 +155,10 @@ function inter(){
 function question(){
  H.phase='q';const q=Q[H.i],M=R(q.round),lim=LIM(q);H.t0=Date.now();H.deadline=H.t0+lim;bc(stateFor);
  const os=optsOf(q),sw=q.type==='swipe'?SW(q):null;
+ const body=q.type==='number'?`<div class="bignum" id="bn">?</div><p class="hint">Chacun tape son estimation${q.unit?' (en '+esc(q.unit)+')':''}. Plus on est proche, plus on marque.</p>`:q.type==='cloud'?`<div class="cloud" id="cloud">${cloudHtml([])}</div>`:q.type==='order'?`<ol class="olist" id="olist">${shuffleFor(H.i,q.items.length).map(k=>`<li>${esc(q.items[k])}</li>`).join('')}</ol><p class="hint">À remettre dans l’ordre sur les téléphones.</p>`:null;
  app.innerHTML=hostHead()+`<section class="stage"><article class="profile"><div class="pic" style="background:${M.tint||'#fff3c4'}">${artOf(q)}${W.online?`<span class="tag"><b></b>${esc(W.online)}</span>`:''}</div><div class="who"><h2>${esc(q.name||'')} ${q.sub?`<small>· ${esc(q.sub)}</small>`:''}</h2>${q.bio?`<p class="bio">${esc(q.bio)}</p>`:''}</div></article>
  <div class="panel"><div class="qh"><div><div class="manche">Question ${H.i+1} / ${Q.length} · ${esc(M.title)}${q.double?' · points doublés':''}</div><h3>${esc(ask(q))}</h3></div><div class="cd" id="cd">${lim/1000}</div></div>
- ${sw?`<p class="swhint">◀ Swipe à gauche : ${esc(sw.left.label)} · Swipe à droite : ${esc(sw.right.label)} ▶</p>`:''}<div class="opts${os.length===2?' two':''}">${os.map((o,k)=>`<div class="opt" data-v="${o.v}" style="--c:${COLS[k]}">${o.icon||`<span class="sh">${k+1}</span>`}<span><b>${esc(o.label)}</b>${o.sub?`<small>${esc(o.sub)}</small>`:''}</span><span class="bar"><i></i></span><span class="nb"></span></div>`).join('')}</div>
+ ${sw?`<p class="swhint">◀ Swipe à gauche : ${esc(sw.left.label)} · Swipe à droite : ${esc(sw.right.label)} ▶</p>`:''}${body!==null?body:`<div class="opts${os.length===2?' two':''}">${os.map((o,k)=>`<div class="opt" data-v="${o.v}" style="--c:${COLS[k]}">${o.icon||`<span class="sh">${k+1}</span>`}<span><b>${esc(o.label)}</b>${o.sub?`<small>${esc(o.sub)}</small>`:''}</span><span class="bar"><i></i></span><span class="nb"></span></div>`).join('')}</div>`}
  <div id="fb"></div><div class="next"><button class="big alt" id="rv">Révéler la réponse</button></div></div></section>`;
  hostCount();$('#rv').onclick=reveal;
  clearInterval(H.tick);H.tick=setInterval(()=>{const r=Math.max(0,Math.ceil((H.deadline-Date.now())/1000));const e=$('#cd');if(e)e.textContent=r;if(r<=0)reveal()},200);
@@ -145,14 +167,24 @@ function reveal(){
  if(H.phase!=='q')return;clearInterval(H.tick);H.phase='rev';
  const q=Q[H.i],lim=LIM(q),gv=String(q.answer),cnt={};let tot=0;
  const before=ranked().map(p=>p.pid);
- H.players.forEach(p=>{const a=p.ans[H.i];let gain=0;if(a){tot++;cnt[a.v]=(cnt[a.v]||0)+1;if(a.v===gv)gain=Math.round(1000*(1-.5*Math.min(a.ms,lim)/lim))*(q.double?2:1)}p.score+=gain;p.last=gain;p.prev=before.indexOf(p.pid)});
+ H.players.forEach(p=>{const a=p.ans[H.i];if(a){tot++;const k=Array.isArray(a.v)?'':String(a.v);cnt[k]=(cnt[k]||0)+1}const gain=gainOf(q,a,lim);p.score+=gain;p.last=gain;p.prev=before.indexOf(p.pid)});
  const r=ranked();
- r.forEach((p,k)=>{const a=p.ans[H.i];p.res={t:'rev',i:H.i,ans:!!a,ok:!!a&&a.v===gv,gain:p.last,score:p.score,rank:k+1,total:r.length,good:goodLabel(q)};send(p,p.res)});
- document.querySelectorAll('.opt').forEach(e=>{const v=e.dataset.v,n=cnt[v]||0;e.classList.add(v===gv?'ok':'dim');e.querySelector('.bar i').style.width=(tot?n/tot*100:0)+'%';e.querySelector('.nb').textContent=n});
+ r.forEach((p,k)=>{const a=p.ans[H.i];p.res={t:'rev',i:H.i,kind:q.type,ans:!!a,ok:p.last>0,gain:p.last,score:p.score,rank:k+1,total:r.length,good:goodLabel(q),mine:a?(q.type==='number'?fmtNum(a.v)+unitOf(q):q.type==='order'?a.v.filter((x,j)=>x===j).length+' / '+q.items.length+' bien placés':''):''};send(p,p.res)});
  const e=$('#cd');if(e)e.textContent='';
+ let head=esc(goodLabel(q)),extra='';
+ if(['choice','icons','swipe','poll'].includes(q.type))document.querySelectorAll('.opt').forEach(e=>{const v=e.dataset.v,n=cnt[v]||0;if(q.type!=='poll')e.classList.add(v===gv?'ok':'dim');e.querySelector('.bar i').style.width=(tot?n/tot*100:0)+'%';e.querySelector('.nb').textContent=n});
  if(q.type==='swipe'){const o=optsOf(q).find(x=>x.v===gv),pic=document.querySelector('.profile .pic');if(pic&&o)pic.insertAdjacentHTML('beforeend',`<span class="bigstamp" style="color:${o.color||'#e21b3c'}">${esc(o.stamp||o.label)}</span>`)}
- $('#fb').innerHTML=`<div class="fb"><h4>${good()}${esc(goodLabel(q))}</h4><p>${esc(q.why||'')}</p></div>`;
- const b=$('#rv');b.textContent='Voir le classement';b.className='big';b.onclick=board;
+ if(q.type==='number'){const bn=$('#bn');if(bn){bn.textContent=fmtNum(q.answer)+unitOf(q);bn.classList.add('ans')}
+  const near=[...H.players.values()].filter(p=>p.ans[H.i]).sort((x,y)=>Math.abs(x.ans[H.i].v-q.answer)-Math.abs(y.ans[H.i].v-q.answer)).slice(0,3);
+  if(near.length)extra=`<p class="near">Les plus proches : ${near.map(p=>`<b>${esc(p.nick)}</b> (${fmtNum(p.ans[H.i].v)})`).join(', ')}</p>`;head='Réponse : '+head}
+ if(q.type==='order'){const ol=$('#olist');if(ol){ol.innerHTML=q.items.map(t=>`<li class="ok">${esc(t)}</li>`).join('');}
+  const full=[...H.players.values()].filter(p=>p.ans[H.i]&&p.ans[H.i].v.every((x,j)=>x===j)).length;extra=`<p class="near">${full} joueur${full>1?'s':''} sur ${tot} ${full>1?'ont':'a'} trouvé l’ordre exact.</p>`;head='Le bon ordre'}
+ if(q.type==='cloud'){const c=$('#cloud');if(c)c.innerHTML=cloudHtml([...H.players.values()].map(p=>p.ans[H.i]).filter(Boolean).map(a=>a.v))}
+ if(NOPTS(q.type))head=`${tot} réponse${tot>1?'s':''}`;
+ $('#fb').innerHTML=`<div class="fb"><h4>${good()}${head}</h4>${q.why?`<p>${esc(q.why)}</p>`:''}${extra}</div>`;
+ const b=$('#rv'),last=H.i===Q.length-1;b.className='big';
+ if(NOPTS(q.type)){b.textContent=last?'Voir le podium':'Question suivante';b.onclick=()=>{H.i++;step()}}
+ else{b.textContent='Voir le classement';b.onclick=board}
 }
 function board(){
  H.phase='board';const r=ranked().slice(0,5),last=H.i===Q.length-1,ST=88;
@@ -241,22 +273,31 @@ function pData(d){
  if(d.t==='q'){
   const q=Q[d.i],os=optsOf(q),end=Date.now()+d.rem,lim=LIM(q);P.qi=d.i;
   const sw=q.type==='swipe'?SW(q):null;
-  app.innerHTML=phead()+`<section class="pq"><div class="pmeta"><span>${esc(q.name||'')}</span><span class="cd" id="pcd"></span></div><div class="timer"><i id="tb"></i></div><h3>${esc(ask(q))}</h3><div id="pq">${d.done?sentBox():sw?`<div class="swipe"><div class="scard" id="scard"><div class="sart" style="background:${R(q.round).tint||'#ffe0e8'}">${artOf(q)}</div><div class="sname">${esc(q.name||'')} ${q.sub?`<small>· ${esc(q.sub)}</small>`:''}</div>${q.bio?`<p class="sbio">${esc(q.bio)}</p>`:''}<span class="stamp sl" style="color:${sw.left.color}">${esc(sw.left.stamp||sw.left.label)}</span><span class="stamp sr" style="color:${sw.right.color}">${esc(sw.right.stamp||sw.right.label)}</span></div></div><div class="sbtns">${os.map(o=>`<button class="sbtn" data-v="${o.v}">${o.icon}${esc(o.label)}</button>`).join('')}</div><p class="shint">Swipe la carte : à gauche ${esc(sw.left.label)}, à droite ${esc(sw.right.label)}</p>`:`<div class="popts${os.length===2?' two':''}">${os.map((o,k)=>`<button class="popt" data-v="${o.v}" style="--c:${COLS[k]}">${o.icon||`<span class="sh">${k+1}</span>`}<b>${esc(o.label)}</b></button>`).join('')}</div>`}</div></section>`;
+  app.innerHTML=phead()+`<section class="pq"><div class="pmeta"><span>${esc(q.name||'')}</span><span class="cd" id="pcd"></span></div><div class="timer"><i id="tb"></i></div><h3>${esc(ask(q))}</h3><div id="pq">${d.done?sentBox():q.type==='number'?`<form id="nform" class="pform"><input id="nv" class="pseudo" inputmode="decimal" autocomplete="off" placeholder="Ton estimation" aria-label="Ton estimation">${q.unit?`<span class="unit">${esc(q.unit)}</span>`:''}<button class="big">Valider</button></form>`:q.type==='cloud'?`<form id="cform" class="pform"><input id="cv" class="pseudo" maxlength="25" autocomplete="off" placeholder="Un mot ou deux" aria-label="Ta réponse"><button class="big">Envoyer</button></form>`:q.type==='order'?`<p class="shint">Touche les étiquettes dans le bon ordre.</p><div class="ord">${shuffleFor(d.i,q.items.length).map(k=>`<button class="oitem" data-k="${k}"><span class="onum"></span>${esc(q.items[k])}</button>`).join('')}</div><div class="obtns"><button class="big alt" id="ore">Recommencer</button><button class="big" id="ook" disabled>Valider</button></div>`:sw?`<div class="swipe"><div class="scard" id="scard"><div class="sart" style="background:${R(q.round).tint||'#ffe0e8'}">${artOf(q)}</div><div class="sname">${esc(q.name||'')} ${q.sub?`<small>· ${esc(q.sub)}</small>`:''}</div>${q.bio?`<p class="sbio">${esc(q.bio)}</p>`:''}<span class="stamp sl" style="color:${sw.left.color}">${esc(sw.left.stamp||sw.left.label)}</span><span class="stamp sr" style="color:${sw.right.color}">${esc(sw.right.stamp||sw.right.label)}</span></div></div><div class="sbtns">${os.map(o=>`<button class="sbtn" data-v="${o.v}">${o.icon}${esc(o.label)}</button>`).join('')}</div><p class="shint">Swipe la carte : à gauche ${esc(sw.left.label)}, à droite ${esc(sw.right.label)}</p>`:`<div class="popts${os.length===2?' two':''}">${os.map((o,k)=>`<button class="popt" data-v="${o.v}" style="--c:${COLS[k]}">${o.icon||`<span class="sh">${k+1}</span>`}<b>${esc(o.label)}</b></button>`).join('')}</div>`}</div></section>`;
   let chosen=!!d.done;
-  const choose=v=>{if(chosen||!P.conn)return;chosen=true;P.conn.send({t:'ans',i:d.i,v});
+  const choose=v=>{if(chosen||!P.conn)return;chosen=true;P.conn.send({t:'ans',i:d.i,v});if(['number','cloud','order'].includes(q.type)){const e=$('#pq');if(e)e.innerHTML=sentBox()}
    document.querySelectorAll('.popt,.sbtn').forEach(x=>{x.disabled=true;if(x.dataset.v!==v)x.classList.add('dim');else x.classList.add('pick')});
    const c=$('#scard');if(c){c.style.transition='transform .35s ease-in';c.style.transform=`translateX(${v==='right'?640:-640}px) rotate(${v==='right'?28:-28}deg)`;const st=c.querySelector(v==='right'?'.sr':'.sl');if(st)st.style.opacity=1}};
   document.querySelectorAll('.popt,.sbtn').forEach(b=>b.onclick=()=>choose(b.dataset.v));
+  const nf=$('#nform');if(nf){setTimeout(()=>{const i=$('#nv');if(i)i.focus()},50);nf.onsubmit=e=>{e.preventDefault();const n=Number($('#nv').value.replace(',','.').replace(/\s/g,''));if(!$('#nv').value.trim()||!Number.isFinite(n))return;choose(n)}}
+  const cf=$('#cform');if(cf){cf.onsubmit=e=>{e.preventDefault();const w=$('#cv').value.trim();if(w)choose(w)}}
+  if(q.type==='order'){let seq=[];const its=[...document.querySelectorAll('.oitem')],ok=$('#ook');
+   const paint=()=>{its.forEach(b=>{const k=+b.dataset.k,pos=seq.indexOf(k);b.classList.toggle('on',pos>=0);b.querySelector('.onum').textContent=pos>=0?pos+1:''});if(ok)ok.disabled=seq.length!==its.length};
+   its.forEach(b=>b.onclick=()=>{if(chosen)return;const k=+b.dataset.k;if(!seq.includes(k))seq.push(k);paint()});
+   $('#ore').onclick=()=>{if(chosen)return;seq=[];paint()};ok.onclick=()=>{if(seq.length===its.length)choose(seq)}}
   const card=$('#scard');
   if(card){let sx=0,dx=0,drag=false;const sl=card.querySelector('.sl'),sr=card.querySelector('.sr');
    card.addEventListener('pointerdown',e=>{if(chosen)return;drag=true;sx=e.clientX;dx=0;try{card.setPointerCapture(e.pointerId)}catch(x){}card.style.transition='none'});
    card.addEventListener('pointermove',e=>{if(!drag)return;dx=e.clientX-sx;card.style.transform=`translateX(${dx}px) rotate(${dx/14}deg)`;sl.style.opacity=Math.min(1,Math.max(0,-dx/110));sr.style.opacity=Math.min(1,Math.max(0,dx/110))});
    const fin=()=>{if(!drag)return;drag=false;if(dx>90)choose('right');else if(dx<-90)choose('left');else{card.style.transition='transform .3s';card.style.transform='';sl.style.opacity=0;sr.style.opacity=0}};
    card.addEventListener('pointerup',fin);card.addEventListener('pointercancel',fin);}
-  const up=()=>{const r=Math.max(0,end-Date.now());const c=$('#pcd'),t=$('#tb');if(c)c.textContent=Math.ceil(r/1000)+' s';if(t)t.style.width=(r/lim*100)+'%';if(r<=0){clearInterval(P.tick);chosen=true;document.querySelectorAll('.popt,.sbtn').forEach(x=>x.disabled=true)}};
+  const up=()=>{const r=Math.max(0,end-Date.now());const c=$('#pcd'),t=$('#tb');if(c)c.textContent=Math.ceil(r/1000)+' s';if(t)t.style.width=(r/lim*100)+'%';if(r<=0){clearInterval(P.tick);chosen=true;document.querySelectorAll('.popt,.sbtn,#pq input,#pq button').forEach(x=>x.disabled=true)}};
   up();P.tick=setInterval(up,200);return;
  }
  if(d.t==='rev'){
+  if(d.kind==='poll'||d.kind==='cloud'){app.innerHTML=phead(d.score)+`<section class="center">${good().replace('<svg','<svg class="hb"')}<h2>${d.ans?'Merci !':'Trop tard…'}</h2><p>Les réponses de la salle s’affichent sur le grand écran.</p></section>`;return}
+  if(d.kind==='number'||d.kind==='order'){const ttl=!d.ans?W.late:d.gain>=800?W.correct:d.gain>0?(d.kind==='order'?'Presque !':'Pas loin !'):W.wrong;
+   app.innerHTML=phead(d.score)+`<section class="center res ${d.gain>0?'good':'bad'}">${(d.gain>0?good():bad()).replace('<svg','<svg class="hb"')}<h2>${esc(ttl)}</h2>${d.gain>0?`<div class="gain">+${d.gain}</div>`:''}${d.ans?`<p>Ta réponse : <b>${esc(d.mine)}</b></p>`:''}<p>${d.kind==='order'?'Le bon ordre :':'La bonne réponse :'} <b>${esc(d.good)}</b></p><p class="rank">${d.rank}<sup>${d.rank===1?'er':'e'}</sup> sur ${d.total}</p></section>`;return}
   const ttl=!d.ans?W.late:d.ok?W.correct:W.wrong;
   app.innerHTML=phead(d.score)+`<section class="center res ${d.ok?'good':'bad'}">${(d.ok?good():bad()).replace('<svg','<svg class="hb"')}<h2>${esc(ttl)}</h2>${d.ok?`<div class="gain">+${d.gain}</div>`:`<p>La bonne réponse : <b>${esc(d.good)}</b></p>`}<p class="rank">${d.rank}<sup>${d.rank===1?'er':'e'}</sup> sur ${d.total}</p></section>`;return;
  }

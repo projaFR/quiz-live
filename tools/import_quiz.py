@@ -41,7 +41,18 @@ def parse(path):
         out, seen = [], set()
         for row in rows:
             q = str(row[qcol] or '').strip()
-            if ycol is not None and norm(row[ycol]) not in ('mcq', 'quiz', ''): continue
+            ty = norm(row[ycol]) if ycol is not None else ''
+            if ty in ('guessnumber', 'poll', 'openquestion', 'sorting'):
+                ch = [str(row[i]).strip() for i in range(ccol + 1, len(row)) if row[i] not in (None, '')]
+                raw = str(row[ccol] or '').replace(',', '.').strip()
+                if ty == 'guessnumber':
+                    try: out.append({'type': 'number', 'ask': q[:120], 'answer': float(raw) if '.' in raw else int(raw)})
+                    except ValueError: pass
+                elif ty == 'poll' and len(ch) >= 2: out.append({'type': 'poll', 'ask': q[:120], 'options': [c[:75] for c in ch[:4]]})
+                elif ty == 'openquestion': out.append({'type': 'cloud', 'ask': q[:120]})
+                elif ty == 'sorting' and len(ch) >= 3: out.append({'type': 'order', 'ask': q[:120], 'items': [c[:60] for c in ch[:6]]})
+                seen.add(q); continue
+            if ycol is not None and ty not in ('mcq', 'quiz', ''): continue
             if not q or q in seen: continue
             opts = [str(row[i]).strip() for i in acols if i < len(row) and row[i] not in (None, '')]
             if len(opts) < 2: continue
@@ -68,9 +79,13 @@ def main():
     for n, q in enumerate(qs):
         r = n // 6 + 1
         if r > len(rounds): rounds.append({'title': f'Manche {r}', 'text': 'Répondez le plus vite possible.', 'art': 'bulle', 'tint': ['#fff3c4', '#ffe0e8', '#dff0ff', '#e6f7ec'][(r - 1) % 4]})
-        questions.append({'round': r, 'art': 'bulle', 'name': f'Question {n + 1}', 'sub': '', 'bio': '', 'ask': q['ask'], 'type': 'choice',
-                          'options': q['options'], 'answer': q['answer'], 'time': q['time'] if q['time'] in (10, 20, 30, 60) else 20,
-                          'why': f"Bonne réponse : {q['options'][q['answer']]}."})
+        base = {'round': r, 'art': 'bulle', 'name': f'Question {n + 1}', 'sub': '', 'bio': '', 'ask': q['ask']}
+        if q.get('type') == 'number': base.update(type='number', answer=q['answer'], why=f"Réponse : {q['answer']}.")
+        elif q.get('type') == 'poll': base.update(type='poll', options=q['options'])
+        elif q.get('type') == 'cloud': base.update(type='cloud')
+        elif q.get('type') == 'order': base.update(type='order', items=q['items'], why='Voici le bon ordre.')
+        else: base.update(type='choice', options=q['options'], answer=q['answer'], time=q['time'] if q['time'] in (10, 20, 30, 60) else 20, why=f"Bonne réponse : {q['options'][q['answer']]}.")
+        questions.append(base)
     quiz = {'id': qid, 'theme': 'rencontre', 'title': title, 'tagline': 'Un quiz importé depuis ' + ('Wooclap' if ycol_seen else 'Kahoot') + '.', 'winner': 'Champion du quiz !',
             'winnerLine': '{nick} remporte la partie.', 'podiumTitle': 'Le podium', 'nickPlaceholder': 'Ton pseudo',
             'gallery': ['bulle', 'heart', 'trophee', 'loupe', 'eleve', 'podium'], 'avatars': ['bulle', 'heart', 'trophee', 'loupe', 'eleve', 'podium'],

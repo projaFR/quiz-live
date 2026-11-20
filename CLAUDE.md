@@ -22,7 +22,11 @@ Champs principaux : `id`, `theme`, `title`, `titleHtml` (option, `<span>` = 2e c
   - `type:"choice"` : `options` = 2 à 4 textes (≤ 75 car.), `answer` = index (0 = première).
   - `type:"icons"` : `options` = clés de `icons`, `answer` = clé.
   - `type:"swipe"` : `answer` = `"left"` ou `"right"` (pas d'options).
-  - `ask` ≤ 120 caractères ; `why` = explication affichée à la révélation (obligatoire).
+  - `type:"number"` (trouver un nombre) : `answer` = nombre, `unit` (option, ex. "%"), `tolerance` (option, défaut 0.5 = 50 % d'écart → 0 point). Points selon la proximité ; les 3 plus proches sont affichés.
+  - `type:"order"` (classement) : `items` = 3 à 6 étiquettes DANS LE BON ORDRE (le moteur les mélange). Tout juste = points avec bonus de vitesse ; partiel = 600 × proportion bien placée.
+  - `type:"poll"` (sondage) : `options` 2 à 4, pas de bonne réponse, pas de points, barres en direct ; passe directement à la question suivante.
+  - `type:"cloud"` (nuage de mots) : réponse libre ≤ 25 caractères, nuage en direct, pas de points.
+  - `ask` ≤ 120 caractères ; `why` = explication affichée à la révélation (obligatoire sauf poll et cloud).
 
 ## Règles de contenu (exigées par Thibaut)
 - Vérifier chaque fait sur des sources fiables (web) avant de l'écrire ; adapter au contexte local quand c'est demandé.
@@ -38,7 +42,7 @@ Champs principaux : `id`, `theme`, `title`, `titleHtml` (option, `<span>` = 2e c
 
 ## Kahoot et Wooclap (dans les deux sens)
 - Export : `build.py` produit aussi `<id>/kahoot.xlsx` (modèle d'import Kahoot : en-têtes ligne 8, colonnes B à H ; swipe → 2 réponses ; onglet « Explications »). Lien dans le catalogue. Kahoot n'importe ni les images ni les explications. Il signale les questions > 120 caractères.
-- Export Wooclap : `<id>/wooclap.xlsx` au format du modèle d'import Wooclap (feuille « Questions » : `Type | Title | Correct | Choice…`, Type = `MCQ`, Correct = numéro de la bonne réponse, à partir de 1). Les titres peuvent être longs (≤ 400 car.).
+- Export Wooclap : `<id>/wooclap.xlsx` au format du modèle d'import Wooclap (feuille « Questions » : `Type | Title | Correct | Choice…`). MCQ (Correct = numéro, à partir de 1), GuessNumber (Correct = nombre), Poll, OpenQuestion (← cloud), Sorting (choix dans le bon ordre). Kahoot n'exporte que les QCM (choice, icons, swipe). Les titres peuvent être longs (≤ 400 car.).
 - Import : `python3 tools/import_quiz.py <fichier.xlsx> <id> "Titre"` (Kahoot ou Wooclap ; questions MCQ uniquement pour Wooclap) crée un brouillon `quizzes/<id>/quiz.json` (questions à choix, manches de 6, personnage générique `bulle`, explication minimale). Accepte le modèle Kahoot et, en principe, le rapport de résultats Kahoot (détection des en-têtes Question / Answer 1-4 / Correct) : si le rapport n'est pas reconnu, adapter `find_table` sur le vrai fichier. Ensuite enrichir : personnages, bios, explications vérifiées, manches et types variés.
 - Besoin d'`openpyxl` (préinstallé dans l'environnement de Claude).
 
