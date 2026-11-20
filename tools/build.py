@@ -160,16 +160,34 @@ def export_wooclap(quiz, path):
     ws.column_dimensions['B'].width = 70
     wb.save(path)
 
+GENERIC_AV = ['bulle', 'heart', 'trophee', 'loupe', 'podium', 'eleve']
+
+def all_ids():
+    return sorted(d for d in os.listdir(os.path.join(ROOT, 'quizzes')) if os.path.exists(os.path.join(ROOT, 'quizzes', d, 'quiz.json')))
+
 def build(qid):
     qdir = os.path.join(ROOT, 'quizzes', qid)
     quiz = json.load(open(os.path.join(qdir, 'quiz.json'), encoding='utf-8'))
-    base_art, quiz_art = rd('engine', 'art.js'), rd('quizzes', qid, 'art.js') if os.path.exists(os.path.join(qdir, 'art.js')) else ''
+    base_art = rd('engine', 'art.js')
+    # Les dessins de TOUS les quiz sont embarqués (ceux du quiz en dernier) : avatars partagés entre quiz.
+    arts = {i: (rd('quizzes', i, 'art.js') if os.path.exists(os.path.join(ROOT, 'quizzes', i, 'art.js')) else '') for i in all_ids()}
+    quiz_art = '\n'.join(arts[i] for i in all_ids() if i != qid) + '\n' + arts.get(qid, '')
+    seen = {}
+    for i, js in arts.items():
+        for k in art_keys(js):
+            if k in seen and seen[k] != i: print(f'  ! dessin « {k} » défini dans {seen[k]} et {i} : renommer l’un des deux')
+            seen.setdefault(k, i)
     errs = check(quiz, art_keys(base_art) | art_keys(quiz_art), os.path.join(ROOT, 'themes'))
     if errs:
         print(f'✗ {qid} : {len(errs)} erreur(s)'); [print('  -', e) for e in errs]; sys.exit(1)
     theme = json.load(open(os.path.join(ROOT, 'themes', quiz['theme'] + '.json'), encoding='utf-8'))
     css = rd('themes', quiz['theme'] + '.css') + rd('engine', 'base.css')
     engine = rd('engine', 'engine.js')
+    others = [json.load(open(os.path.join(ROOT, 'quizzes', i, 'quiz.json'), encoding='utf-8')).get('avatars', []) for i in all_ids() if i != qid]
+    av = []
+    for k in quiz.get('avatars', []) + [x for o in others for x in o] + GENERIC_AV:
+        if k not in av: av.append(k)
+    quiz = {**quiz, 'avatars': av}
     data = 'const QUIZ=' + json.dumps(quiz, ensure_ascii=False) + ';\nconst THEME=' + json.dumps(theme, ensure_ascii=False) + ';\n'
     ver = hashlib.sha1((css + base_art + quiz_art + data + engine).encode()).hexdigest()[:7]
     page = f'''<!DOCTYPE html>
@@ -202,7 +220,7 @@ def build(qid):
     open(os.path.join(ROOT, qid, 'index.html'), 'w', encoding='utf-8').write(page)
     kw = export_kahoot(quiz, os.path.join(ROOT, qid, 'kahoot.xlsx'))
     export_wooclap(quiz, os.path.join(ROOT, qid, 'wooclap.xlsx'))
-    print(f'✓ {qid} : {len(quiz["questions"])} questions, {len(quiz["rounds"])} manches, version {ver} (+ kahoot.xlsx, wooclap.xlsx)')
+    print(f'✓ {qid} : {len(quiz["questions"])} questions, {len(quiz["rounds"])} manches, {len(av)} avatars, version {ver} (+ kahoot.xlsx, wooclap.xlsx)')
     for w in kw: print('  ! Kahoot :', w)
     return quiz
 
@@ -228,7 +246,7 @@ p{{color:#d9ece2;max-width:36em}}
     print(f'✓ catalogue : {len(quizzes)} quiz')
 
 if __name__ == '__main__':
-    ids = sys.argv[1:] or sorted(d for d in os.listdir(os.path.join(ROOT, 'quizzes')) if os.path.exists(os.path.join(ROOT, 'quizzes', d, 'quiz.json')))
+    ids = sys.argv[1:] or all_ids()
     built = [build(i) for i in ids]
     allq = [json.load(open(os.path.join(ROOT, 'quizzes', d, 'quiz.json'), encoding='utf-8')) for d in sorted(os.listdir(os.path.join(ROOT, 'quizzes'))) if os.path.exists(os.path.join(ROOT, 'quizzes', d, 'quiz.json'))]
     catalog(allq)
