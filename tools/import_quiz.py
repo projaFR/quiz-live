@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Transforme un fichier Kahoot (.xlsx) en brouillon de quiz Quiz Live.
+"""Transforme un fichier Kahoot ou Wooclap (.xlsx) en brouillon de quiz Quiz Live.
 
 Accepte :
   - le modèle d'import Kahoot (colonnes Question / Answer 1-4 / Time limit / Correct answer(s)) ;
-  - le rapport de résultats téléchargé après une partie (on y cherche le tableau des questions).
-Usage : python3 tools/import_kahoot.py rapport.xlsx mon-quiz "Titre du quiz"
+  - le rapport de résultats Kahoot (on y cherche le tableau des questions) ;
+  - le modèle d'import Wooclap (Type / Title / Correct / Choice…) : seules les questions MCQ sont reprises.
+Usage : python3 tools/import_quiz.py fichier.xlsx mon-quiz "Titre du quiz"
 Produit quizzes/mon-quiz/quiz.json (questions à choix, réparties en manches de 6) et un art.js vide.
 Le brouillon passe la vérification de build.py ; Claude l'enrichit ensuite (personnages, explications, manches, swipe…).
 """
@@ -19,23 +20,28 @@ def find_table(ws):
     rows = list(ws.iter_rows(values_only=True))
     for r, row in enumerate(rows[:60]):
         h = [norm(c) for c in row]
-        qcol = next((i for i, c in enumerate(h) if c.startswith('question') and 'number' not in c and 'numero' not in c and 'type' not in c), None)
-        acols = [i for i, c in enumerate(h) if re.match(r'^(answer|reponse|answer option)\s*\d', c)]
+        qcol = next((i for i, c in enumerate(h) if (c.startswith('question') or c in ('title', 'titre')) and 'number' not in c and 'numero' not in c and 'type' not in c), None)
+        acols = [i for i, c in enumerate(h) if re.match(r'^(answer|reponse|answer option)\s*\d', c) or c in ('choice', 'choix')]
+        ycol = next((i for i, c in enumerate(h) if c == 'type'), None)
         ccol = next((i for i, c in enumerate(h) if 'correct' in c or 'bonne' in c), None)
         tcol = next((i for i, c in enumerate(h) if 'time' in c or 'temps' in c), None)
         if qcol is not None and len(acols) >= 2 and ccol is not None:
-            return rows[r + 1:], qcol, acols[:4], ccol, tcol
+            return rows[r + 1:], qcol, acols[:4], ccol, tcol, ycol
     return None
 
+ycol_seen = False
 def parse(path):
+    global ycol_seen
     wb = openpyxl.load_workbook(path, data_only=True)
     for ws in wb.worksheets:
         t = find_table(ws)
         if not t: continue
-        rows, qcol, acols, ccol, tcol = t
+        rows, qcol, acols, ccol, tcol, ycol = t
+        ycol_seen = ycol is not None
         out, seen = [], set()
         for row in rows:
             q = str(row[qcol] or '').strip()
+            if ycol is not None and norm(row[ycol]) not in ('mcq', 'quiz', ''): continue
             if not q or q in seen: continue
             opts = [str(row[i]).strip() for i in acols if i < len(row) and row[i] not in (None, '')]
             if len(opts) < 2: continue
@@ -55,6 +61,7 @@ def main():
     src, qid = sys.argv[1], sys.argv[2]
     title = sys.argv[3] if len(sys.argv) > 3 else qid.replace('-', ' ').capitalize()
     qs, sheet = parse(src)
+    global ycol_seen
     if not qs:
         print('✗ Aucun tableau de questions reconnu dans ce fichier. Envoyez-le à Claude pour adapter le convertisseur.'); sys.exit(1)
     rounds, questions = [], []
@@ -64,11 +71,11 @@ def main():
         questions.append({'round': r, 'art': 'bulle', 'name': f'Question {n + 1}', 'sub': '', 'bio': '', 'ask': q['ask'], 'type': 'choice',
                           'options': q['options'], 'answer': q['answer'], 'time': q['time'] if q['time'] in (10, 20, 30, 60) else 20,
                           'why': f"Bonne réponse : {q['options'][q['answer']]}."})
-    quiz = {'id': qid, 'theme': 'rencontre', 'title': title, 'tagline': 'Un quiz importé depuis Kahoot.', 'winner': 'Champion du quiz !',
+    quiz = {'id': qid, 'theme': 'rencontre', 'title': title, 'tagline': 'Un quiz importé depuis ' + ('Wooclap' if ycol_seen else 'Kahoot') + '.', 'winner': 'Champion du quiz !',
             'winnerLine': '{nick} remporte la partie.', 'podiumTitle': 'Le podium', 'nickPlaceholder': 'Ton pseudo',
             'gallery': ['bulle', 'heart', 'trophee', 'loupe', 'eleve', 'podium'], 'avatars': ['bulle', 'heart', 'trophee', 'loupe', 'eleve', 'podium'],
             'lobbyArt': 'bulle', 'words': {'correct': 'Bonne réponse !', 'wrong': 'Raté…', 'online': ''}, 'rounds': rounds, 'questions': questions,
-            'sources': [f'Import Kahoot : {os.path.basename(src)} (feuille « {sheet} »)']}
+            'sources': [f'Import : {os.path.basename(src)} (feuille « {sheet} »)']}
     d = os.path.join(ROOT, 'quizzes', qid); os.makedirs(d, exist_ok=True)
     json.dump(quiz, open(os.path.join(d, 'quiz.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     if not os.path.exists(os.path.join(d, 'art.js')):

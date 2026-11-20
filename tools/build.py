@@ -65,13 +65,13 @@ def check(quiz, keys, theme_dir):
     return err
 
 
-def kahoot_text(q, quiz):
+def kahoot_text(q, quiz, maxlen=120):
     """Texte autonome de la question pour Kahoot (sans la carte illustrée)."""
     asks = q.get('ask') or (quiz.get('swipe', {}).get('ask') if q['type'] == 'swipe' else 'Quelle est la bonne réponse ?')
     name, bio = q.get('name', ''), q.get('bio', '')
     if q['type'] == 'swipe':
         t = f"{name} : {bio}" if bio else name
-        if len(t + ' ' + asks) <= 120: t = t + ' ' + asks
+        if len(t + ' ' + asks) <= maxlen: t = t + ' ' + asks
     elif q.get('ask') and q['type'] == 'choice':
         t = asks
     else:
@@ -116,6 +116,25 @@ def export_kahoot(quiz, path):
     wb.save(path)
     return warn
 
+def answers_of(q, quiz):
+    if q['type'] == 'swipe':
+        sw = {**quiz.get('swipe', {}), **quiz['rounds'][q['round'] - 1].get('swipe', {}), **q.get('swipe', {})}
+        return [sw['left']['label'], sw['right']['label']], (1 if q['answer'] == 'left' else 2)
+    if q['type'] == 'icons':
+        return [quiz['icons'][k]['label'] for k in q['options']], q['options'].index(q['answer']) + 1
+    return list(q['options']), q['answer'] + 1
+
+def export_wooclap(quiz, path):
+    """Fichier au format du modèle d'import Wooclap : Type | Title | Correct | Choice… (questions MCQ)."""
+    if openpyxl is None: return
+    wb = openpyxl.Workbook(); ws = wb.active; ws.title = 'Questions'
+    ws.append(['Type', 'Title', 'Correct'] + ['Choice'] * 7)
+    for q in quiz['questions']:
+        opts, cor = answers_of(q, quiz)
+        ws.append(['MCQ', kahoot_text(q, quiz, maxlen=400), str(cor)] + opts)
+    ws.column_dimensions['B'].width = 70
+    wb.save(path)
+
 def build(qid):
     qdir = os.path.join(ROOT, 'quizzes', qid)
     quiz = json.load(open(os.path.join(qdir, 'quiz.json'), encoding='utf-8'))
@@ -157,13 +176,14 @@ def build(qid):
     os.makedirs(os.path.join(ROOT, qid), exist_ok=True)
     open(os.path.join(ROOT, qid, 'index.html'), 'w', encoding='utf-8').write(page)
     kw = export_kahoot(quiz, os.path.join(ROOT, qid, 'kahoot.xlsx'))
-    print(f'✓ {qid} : {len(quiz["questions"])} questions, {len(quiz["rounds"])} manches, version {ver} (+ kahoot.xlsx)')
+    export_wooclap(quiz, os.path.join(ROOT, qid, 'wooclap.xlsx'))
+    print(f'✓ {qid} : {len(quiz["questions"])} questions, {len(quiz["rounds"])} manches, version {ver} (+ kahoot.xlsx, wooclap.xlsx)')
     for w in kw: print('  ! Kahoot :', w)
     return quiz
 
 def catalog(quizzes):
     cards = '\n'.join(f'''<a class="card" href="{q['id']}/"><b>{html.escape(q['title'])}</b><span>{html.escape(q.get('tagline', ''))}</span><small>{len(q['questions'])} questions · thème {html.escape(q['theme'])}</small></a>''' for q in quizzes)
-    kl = ' · '.join(f'''<a href="{q['id']}/kahoot.xlsx">{html.escape(q['title'])}</a>''' for q in quizzes)
+    kl = ' · '.join(f'''{html.escape(q['title'])} : <a href="{q['id']}/kahoot.xlsx">Kahoot</a> / <a href="{q['id']}/wooclap.xlsx">Wooclap</a>''' for q in quizzes)
     page = f'''<!DOCTYPE html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Quiz Live</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
@@ -176,7 +196,7 @@ p{{color:#d9ece2;max-width:36em}}
 .card{{background:#fff;color:#16241e;border-radius:22px;padding:20px;text-decoration:none;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 0 rgba(0,0,0,.2);transition:transform .15s}}
 .card:hover{{transform:translateY(-4px)}}.card b{{font:700 26px Fredoka,sans-serif}}.card small{{color:#5b6b63}}.dl{{margin-top:28px;font-size:15px}}.dl a{{color:#ffcf33}}
 </style></head><body><main><h1>Quiz Live</h1><p>Des quiz en direct : le grand écran présente, les téléphones répondent, le classement tombe en direct. Choisissez un quiz.</p>
-<div class="grid">{cards}</div><p class="dl">Version Kahoot (fichier à importer dans Kahoot) : {kl}</p></main></body></html>
+<div class="grid">{cards}</div><p class="dl">Fichiers à importer dans Kahoot ou Wooclap : {kl}</p></main></body></html>
 '''
     open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(page)
     print(f'✓ catalogue : {len(quizzes)} quiz')
