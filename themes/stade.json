@@ -1,0 +1,11 @@
+{
+ "fonts":"https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;800&display=swap",
+ "logoArt":"ballon","goodArt":"ballon","badArt":"carton",
+ "words":{
+  "correct":"BUUUT !","wrong":"Hors-jeu…","late":"Coup de sifflet final…","online":"En ligne",
+  "profileTitle":"Ta licence de joueur","profileText":"Ton pseudo et ton avatar s’afficheront sur le grand écran : soigne ton entrée sur la pelouse.",
+  "inRoom":"Tu es sur la feuille de match !","inRoomText":"Ton pseudo s’affiche sur le grand écran. Le coup d’envoi approche.",
+  "board":"Classement","podium":"Le podium","endNeutral":"Fin du match","podiumPlayer":"Sur le podium !",
+  "go":"Coup d’envoi","sent":"Tir cadré !","watch":"Regarde le grand écran."
+ }
+}
