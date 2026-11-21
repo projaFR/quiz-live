@@ -12,11 +12,11 @@
  "nickPlaceholder": "Kylian du dimanche",
  "gallery": [
   "ballon",
-  "maillot",
+  "crampon",
   "sifflet",
   "carton",
-  "echarpe",
-  "crampon"
+  "gants",
+  "tactique"
  ],
  "lobbyArt": "ballon",
  "avatars": [
@@ -27,7 +27,12 @@
   "micro",
   "echarpe",
   "crampon",
-  "score"
+  "score",
+  "fanion",
+  "cage",
+  "chrono",
+  "gants",
+  "tactique"
  ],
  "sources": [
   "https://ligue1.com/fr/articles/l1_article_80-historique-et-records-du-classement-des-buteurs-l1",
@@ -76,18 +81,18 @@
    "tint": "#dff0ff"
   },
   {
-   "title": "Les chiffres du match",
-   "text": "Tapez votre estimation. Plus vous êtes proche, plus vous marquez.",
-   "art": "score",
-   "tint": "#dff0ff",
-   "time": 30
-  },
-  {
    "title": "Le classement",
-   "text": "Remettez les clubs dans l’ordre du classement.",
-   "art": "maillot",
+   "text": "Remettez les clubs dans l’ordre du classement final.",
+   "art": "tactique",
    "tint": "#e6f7ec",
    "time": 35
+  },
+  {
+   "title": "Les chiffres du match",
+   "text": "Tapez votre estimation. Plus vous êtes proche, plus vous marquez.",
+   "art": "chrono",
+   "tint": "#dff0ff",
+   "time": 30
   },
   {
    "title": "Les prolongations",
@@ -120,10 +125,10 @@
   },
   {
    "round": 2,
-   "art": "maillot",
-   "name": "Le meilleur buteur",
+   "art": "crampon",
+   "name": "Le soulier du buteur",
    "sub": "2023-24",
-   "bio": "27 fois, j’ai fait trembler les filets. Mon nom ? À vous de le trouver.",
+   "bio": "J’ai marqué 27 fois cette saison. Enfin… surtout celui qui me portait.",
    "type": "choice",
    "ask": "Qui a fini meilleur buteur de Ligue 1 en 2023-24, avec 27 buts ?",
    "options": [
@@ -133,14 +138,14 @@
     "Wissam Ben Yedder"
    ],
    "answer": 1,
-   "why": "Kylian Mbappé a fini meilleur buteur avec 27 buts, devant Jonathan David, avant de partir au Real Madrid. Il est le seul joueur sacré six fois meilleur buteur de Ligue 1."
+   "why": "Kylian Mbappé, devant Jonathan David, pour sa dernière saison avant le Real Madrid. Il est le seul joueur sacré six fois meilleur buteur de Ligue 1."
   },
   {
    "round": 2,
-   "art": "maillot",
-   "name": "Le petit poucet",
+   "art": "fanion",
+   "name": "Le drapeau de corner",
    "sub": "2023-24",
-   "bio": "Petit budget, grand cœur. Personne ne m’attendait aussi haut.",
+   "bio": "Je vis dans un coin du terrain et j’adore les surprises. Celle-ci, personne ne l’avait vue venir.",
    "type": "choice",
    "ask": "Quel club a créé la surprise en finissant 3e de la Ligue 1 2023-24 ?",
    "options": [
@@ -150,7 +155,7 @@
     "Lille"
    ],
    "answer": 2,
-   "why": "Le Stade Brestois a fini 3e derrière le PSG et Monaco, et s’est qualifié pour la première fois de son histoire pour la Ligue des champions."
+   "why": "Le Stade Brestois, 3e derrière le PSG et Monaco, a disputé la Ligue des champions pour la première fois de son histoire."
   },
   {
    "round": 2,
@@ -161,22 +166,22 @@
    "type": "choice",
    "ask": "En 2024-25, Ousmane Dembélé a partagé le titre de meilleur buteur (21 buts) avec…",
    "options": [
+    "Bradley Barcola",
     "Mason Greenwood",
     "Jonathan David",
-    "Bradley Barcola",
     "Arnaud Kalimuendo"
    ],
-   "answer": 0,
-   "why": "Dembélé (PSG) et Mason Greenwood (OM) ont fini à égalité avec 21 buts. Dembélé a ensuite remporté le Ballon d’Or 2025."
+   "answer": 1,
+   "why": "Dembélé (PSG) et Mason Greenwood (OM) ont fini à égalité avec 21 buts. Quelques mois plus tard, Dembélé recevait le Ballon d’Or."
   },
   {
    "round": 2,
-   "art": "maillot",
-   "name": "Le briseur de série",
+   "art": "cage",
+   "name": "Le filet",
    "sub": "2025-26",
-   "bio": "Dix ans que le même club gardait ce trophée. Cette fois, il a changé de mains.",
+   "bio": "Le même attaquant m’a fait trembler 21 fois. Et pour une fois, il ne jouait pas à Paris.",
    "type": "choice",
-   "ask": "Qui a fini meilleur buteur 2025-26, mettant fin à 10 ans de domination parisienne ?",
+   "ask": "Qui a fini meilleur buteur de Ligue 1 en 2025-26, avec 21 buts ?",
    "options": [
     "Mason Greenwood",
     "Joaquín Panichelli",
@@ -184,52 +189,52 @@
     "Estéban Lepaul"
    ],
    "answer": 3,
-   "why": "Le Rennais Estéban Lepaul a marqué 21 buts, devant Greenwood et Panichelli (16 chacun). Les joueurs du PSG avaient gagné ce trophée les 10 saisons précédentes."
+   "why": "Le Rennais Estéban Lepaul, devant Greenwood et Panichelli (16 buts chacun). Il met fin à 10 ans de règne des joueurs du PSG sur ce trophée."
   },
   {
    "round": 2,
-   "art": "maillot",
-   "name": "Le dauphin",
+   "art": "podium",
+   "name": "La 2e marche",
    "sub": "2025-26",
-   "bio": "Une saison XXL et 70 points. Seul le champion a fait mieux que moi.",
+   "bio": "On m’oublie toujours sur les photos. Cette saison, un club y est monté avec 70 points.",
    "type": "choice",
-   "ask": "Quel club a terminé 2e de la Ligue 1 2025-26, avec 70 points ?",
+   "ask": "Quel club a terminé 2e de la Ligue 1 2025-26, derrière le PSG ?",
    "options": [
     "Marseille",
     "Lens",
-    "Lille",
-    "Monaco"
+    "Monaco",
+    "Lille"
    ],
    "answer": 1,
-   "why": "Le RC Lens a fini 2e avec 70 points, 6 de moins que le PSG, et retrouve la Ligue des champions."
+   "why": "Le RC Lens, avec 70 points, 6 de moins que le PSG. Il retrouve la Ligue des champions."
   },
   {
    "round": 2,
-   "art": "maillot",
-   "name": "Le trouble-fête",
-   "sub": "17 mai 2026",
-   "bio": "Le dernier soir de la saison, j’ai gâché la fête du champion.",
+   "art": "sifflet",
+   "name": "Le sifflet final",
+   "sub": "dernière journée",
+   "bio": "17 mai 2026, dernier coup de sifflet de la saison. Le champion n’a pas fait la fête prévue.",
    "type": "choice",
-   "ask": "Qui a battu le PSG 2-1 lors de la dernière journée de 2025-26 ?",
+   "ask": "Qui a battu le PSG, déjà champion, lors de la dernière journée de 2025-26 ?",
    "options": [
-    "Le Paris FC",
     "Nantes",
     "Lens",
+    "Le Paris FC",
     "Metz"
    ],
-   "answer": 0,
-   "why": "Déjà champion, le PSG a perdu 2-1 contre son voisin le Paris FC, au stade Jean-Bouin, grâce à un doublé d’Alimami Gory, entré en jeu."
+   "answer": 2,
+   "why": "Le Paris FC, son voisin, a gagné 2-1 au stade Jean-Bouin grâce à un doublé d’Alimami Gory, entré en jeu."
   },
   {
    "round": 3,
-   "art": "score",
-   "name": "Le calendrier",
+   "art": "chrono",
+   "name": "Le chrono",
    "sub": "depuis 2023",
-   "bio": "On m’a retiré quatre matchs par club. Je me sens plus léger.",
+   "bio": "Je compte les minutes, les matchs et les journées. Ne me demandez pas mon âge.",
    "type": "swipe",
    "ask": "Depuis 2023-24, la Ligue 1 se joue à 18 clubs, soit 34 journées.",
    "answer": "right",
-   "why": "La Ligue 1 est passée de 20 à 18 clubs en 2023-24 : chaque équipe joue désormais 34 matchs au lieu de 38."
+   "why": "La Ligue 1 est passée de 20 à 18 clubs en 2023-24 : chaque équipe joue 34 matchs au lieu de 38."
   },
   {
    "round": 3,
@@ -238,31 +243,31 @@
    "sub": "2024-25",
    "bio": "J’ai vu Paris enchaîner les victoires toute la saison.",
    "type": "swipe",
-   "ask": "En 2024-25, le PSG a été champion sans perdre un seul match de Ligue 1.",
+   "ask": "En 2024-25, le PSG a terminé la saison de Ligue 1 sans aucune défaite.",
    "answer": "left",
-   "why": "Le PSG est resté invaincu 30 matchs de suite, mais il a fini par connaître la défaite : la saison n’a pas été parfaite."
+   "why": "Invaincu 30 matchs de suite, déjà champion, le PSG a perdu 3-1 contre Nice au Parc des Princes le 25 avril 2025. Adieu la saison parfaite."
   },
   {
    "round": 3,
-   "art": "maillot",
-   "name": "Le Ballon d’Or",
-   "sub": "2025-26",
-   "bio": "Deux trophées de meilleur joueur d’affilée. Mon secret ? Je le garde pour moi.",
+   "art": "micro",
+   "name": "Le micro de la cérémonie",
+   "sub": "trophées UNFP 2026",
+   "bio": "Ce soir-là, j’ai annoncé le même nom que l’année d’avant.",
    "type": "swipe",
-   "ask": "En 2025-26, Dembélé a été élu meilleur joueur de L1 après plus de 25 matchs comme titulaire.",
+   "ask": "En 2026, Dembélé a été élu meilleur joueur de L1 après plus de 25 matchs comme titulaire.",
    "answer": "left",
-   "why": "Ousmane Dembélé n’a été titulaire que 9 fois (20 matchs, 10 buts), mais a quand même gagné le trophée UNFP pour la deuxième année de suite."
+   "why": "Ousmane Dembélé n’a été titulaire que 9 fois (20 matchs, 10 buts), mais il a quand même gagné le trophée pour la 2e année de suite."
   },
   {
    "round": 3,
-   "art": "ballon",
-   "name": "Le ballon",
-   "sub": "20 septembre 2024",
-   "bio": "Ce soir-là, j’ai fait tellement d’allers-retours vers le filet que j’en ai eu le tournis.",
+   "art": "score",
+   "name": "Le tableau d’affichage",
+   "sub": "2024-25",
+   "bio": "Je suis allumé tous les week-ends. Certains soirs, j’aimerais bien m’éteindre.",
    "type": "swipe",
    "ask": "En 2024-25, Nice a battu Saint-Étienne 8-0.",
    "answer": "right",
-   "why": "Nice a écrasé Saint-Étienne 8-0 le 20 septembre 2024 : la plus large victoire de la saison. Saint-Étienne a fini relégué."
+   "why": "Le 20 septembre 2024 : la plus large victoire de la saison. Saint-Étienne a fini relégué."
   },
   {
    "round": 3,
@@ -277,60 +282,21 @@
   },
   {
    "round": 3,
-   "art": "sifflet",
-   "name": "L’arbitre",
+   "art": "gants",
+   "name": "Les gants du gardien",
    "sub": "barrage 2026",
-   "bio": "Dernier match de la saison, tout le monde retient son souffle. Moi, je siffle.",
+   "bio": "Un barrage, c’est 180 minutes de stress. Moi, je préfère les tirs au but.",
    "type": "swipe",
    "ask": "En 2026, Nice a perdu le barrage et a été relégué en Ligue 2.",
    "answer": "left",
-   "why": "16e, Nice a joué le barrage contre Saint-Étienne et s’est maintenu (0-0 puis 4-1). Les relégués 2025-26 sont Nantes et Metz."
+   "why": "16e, Nice s’est maintenu en battant Saint-Étienne (0-0 puis 4-1). Les relégués de 2025-26 sont Nantes et Metz."
   },
   {
    "round": 4,
-   "art": "trophee",
-   "name": "Le trophée",
+   "art": "tactique",
+   "name": "Le tableau tactique",
    "sub": "2024-25",
-   "bio": "Paris m’a soulevé avec une montagne de points. Combien exactement ?",
-   "type": "number",
-   "ask": "Combien de points le PSG a-t-il obtenus en Ligue 1 2024-25 (34 matchs) ?",
-   "answer": 84,
-   "unit": "points",
-   "tolerance": 0.3,
-   "why": "84 points en 34 matchs, soit près de 2,5 points par match."
-  },
-  {
-   "round": 4,
-   "art": "ballon",
-   "name": "Le ballon",
-   "sub": "2025-26",
-   "bio": "J’ai compté chaque but de la saison. J’ai encore mal à la tête.",
-   "type": "number",
-   "ask": "Combien de buts ont été marqués au total en Ligue 1 2025-26 ?",
-   "answer": 863,
-   "unit": "buts",
-   "tolerance": 0.3,
-   "why": "863 buts, soit 2,82 par match : la 2e meilleure moyenne du 21e siècle, juste derrière la saison 2024-25 (2,98)."
-  },
-  {
-   "round": 4,
-   "art": "maillot",
-   "name": "Le miraculé",
-   "sub": "2025-26",
-   "bio": "J’ai passé l’hiver au fond du classement. Et pourtant, je joue toujours en Ligue 1.",
-   "type": "number",
-   "ask": "Combien de jours de suite Auxerre a-t-il passés dans les 3 derniers avant de se sauver en 2025-26 ?",
-   "answer": 196,
-   "unit": "jours",
-   "tolerance": 0.5,
-   "why": "196 jours d’affilée (du 26 octobre au 9 mai), et 210 au total dans la saison. Auxerre s’est pourtant maintenu."
-  },
-  {
-   "round": 5,
-   "art": "score",
-   "name": "Le tableau d’affichage",
-   "sub": "2024-25",
-   "bio": "J’affiche les résultats, je ne juge pas. Enfin, un peu.",
+   "bio": "J’ai vu passer tous les plans de jeu de la saison. Le classement final, lui, ne se discute pas.",
    "type": "order",
    "ask": "Classez ces clubs du 1er au 5e de la Ligue 1 2024-25.",
    "items": [
@@ -343,11 +309,11 @@
    "why": "PSG, Marseille, Monaco et Nice sont allés en Ligue des champions ; Lille, 5e, en Ligue Europa."
   },
   {
-   "round": 5,
-   "art": "micro",
-   "name": "Le commentateur",
+   "round": 4,
+   "art": "echarpe",
+   "name": "L’écharpe",
    "sub": "2025-26",
-   "bio": "Dernière journée, multiplex, j’ai perdu ma voix. Et vous, vous vous souvenez du classement ?",
+   "bio": "J’ai suivi la course à l’Europe jusqu’à la dernière minute de la dernière journée.",
    "type": "order",
    "ask": "Classez ces clubs du 3e au 6e de la Ligue 1 2025-26.",
    "items": [
@@ -356,7 +322,56 @@
     "Marseille",
     "Rennes"
    ],
-   "why": "Lille 3e (61 pts), Lyon 4e (60), Marseille 5e et Rennes 6e (59 chacun). Lille a pris la dernière place en Ligue des champions pour un seul point."
+   "why": "Lille 3e (61 pts), Lyon 4e (60), Marseille 5e et Rennes 6e (59 chacun). Lille a décroché la Ligue des champions pour un point."
+  },
+  {
+   "round": 5,
+   "art": "maillot",
+   "artArgs": [
+    "#1d3b8f",
+    "#e63946",
+    "10"
+   ],
+   "name": "Le maillot du champion",
+   "sub": "2024-25",
+   "bio": "J’ai beaucoup gagné cette saison. Mais combien de points exactement ?",
+   "type": "number",
+   "ask": "Combien de points le PSG a-t-il obtenus en Ligue 1 2024-25 (34 matchs) ?",
+   "answer": 84,
+   "unit": "points",
+   "tolerance": 0.3,
+   "why": "84 points, 19 de plus que l’OM, 2e. Paris était champion dès le 5 avril."
+  },
+  {
+   "round": 5,
+   "art": "loupe",
+   "name": "La loupe des stats",
+   "sub": "2025-26",
+   "bio": "J’ai compté chaque but de la saison. J’ai encore mal aux yeux.",
+   "type": "number",
+   "ask": "Combien de buts ont été marqués au total en Ligue 1 2025-26 ?",
+   "answer": 863,
+   "unit": "buts",
+   "tolerance": 0.3,
+   "why": "863 buts, soit 2,82 par match : la 2e meilleure moyenne du 21e siècle, juste derrière 2024-25 (2,98)."
+  },
+  {
+   "round": 5,
+   "art": "maillot",
+   "artArgs": [
+    "#fff",
+    "#2b7de9",
+    "9"
+   ],
+   "name": "Le miraculé",
+   "sub": "2025-26",
+   "bio": "J’ai passé l’hiver au fond du classement. Et pourtant, je joue toujours en Ligue 1.",
+   "type": "number",
+   "ask": "Combien de jours de suite Auxerre a-t-il passés dans les 3 derniers avant de se sauver en 2025-26 ?",
+   "answer": 196,
+   "unit": "jours",
+   "tolerance": 0.5,
+   "why": "196 jours d’affilée, du 26 octobre au 9 mai (210 au total dans la saison). Auxerre s’est pourtant maintenu."
   },
   {
    "round": 6,
@@ -369,12 +384,12 @@
    "options": [
     "12",
     "13",
-    "14",
-    "11"
+    "11",
+    "14"
    ],
-   "answer": 2,
+   "answer": 3,
    "double": true,
-   "why": "14 titres : le 12e en 2024, le 13e en 2025 et le 14e en 2026, assuré dès le 14 mai. Trois saisons, trois titres pour Paris."
+   "why": "14 titres : le 12e en 2024, le 13e en 2025 et le 14e en 2026. Trois saisons, trois titres pour Paris."
   },
   {
    "round": 7,
