@@ -35,6 +35,10 @@ Champs principaux : `id`, `theme`, `title`, `titleHtml` (option, `<span>` = 2e c
 - Une manche = un seul type de question. Les manches swipe mélangent gauche et droite, dans un ordre imprévisible.
 - Varier la position de la bonne réponse dans les questions à choix.
 - Pas de préfixe « Red flag : » dans `why` (le titre l'affiche déjà).
+- Ne jamais donner la réponse avant qu'on la demande :
+  - le dessin (`art`, couleurs d'`artArgs`), le nom du personnage, `sub` et `bio` ne doivent pas trahir la réponse (pas de maillot aux couleurs du club à trouver, pas de « vue sur l'océan » pour Brest, pas d'indice sur vrai/faux dans une manche swipe) ;
+  - une explication (`why`), un énoncé ou une option ne doivent pas révéler la réponse d'une question PLUS LOIN dans le quiz (ex. : citer le 2e d'un classement avant la question « remettez le classement dans l'ordre », donner un total de points avant la question « combien de points ? ») ;
+  - avant de construire, relire tout le quiz dans l'ordre de jeu en se demandant à chaque question : « qu'est-ce que le joueur a déjà vu ? » et corriger.
 
 ## Construire, tester, publier
 1. `python3 tools/build.py` (vérifie le quiz et s'arrête sur la première erreur ; affiche la version).
