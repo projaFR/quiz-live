@@ -183,6 +183,19 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--yel);outline-of
 .gobar .scrollhint{margin:0;max-width:none;background:var(--yel);color:var(--ink);font-weight:800;font-size:14px;line-height:1.3;border-radius:99px;padding:6px 14px;animation:bob 1.4s ease-in-out infinite;transition:opacity .3s}
 .gobar .scrollhint.off{display:none}
 @keyframes bob{50%{transform:translateY(4px)}}
+.nophone{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:-6px 0 20px;color:#d9ece2;font-weight:800}
+.chip2{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);color:#fff;border:2px solid rgba(255,255,255,.25);border-radius:99px;padding:8px 16px;min-height:44px;font-weight:800;font-size:15px}
+.chip2:hover{background:rgba(255,255,255,.2)}.chip2.on{background:var(--yel);color:var(--ink);border-color:var(--yel)}
+.modes{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0 14px}
+.tform{display:grid;gap:10px;width:min(420px,100%);justify-items:center}.tform .pseudo{margin:0}
+.opt.click,.olist li.click{cursor:pointer}.opt.click:hover{transform:translateY(-3px)}
+.opt.pick{outline:5px solid var(--yel)}
+.olist li{display:flex;align-items:center;gap:12px}.olist .onum:empty{display:none}
+.olist .onum{flex:none;width:30px;height:30px;border-radius:50%;background:var(--pink);color:#fff;display:grid;place-items:center;font:700 16px var(--fd)}
+.hform{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:6px 0}.hform .pseudo{margin:0;flex:1 1 220px}
+.tticks{margin-top:14px}.tticks>b{display:block;margin-bottom:8px}.tticks div{display:flex;flex-wrap:wrap;gap:8px}
+.tticks .chip2{background:var(--paper);color:var(--ink);border-color:var(--line)}.tticks .chip2.on{background:var(--green);color:#fff;border-color:var(--green)}
+.hint.tm{margin:0 auto 0 0;align-self:center}
 #lost,#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--pink);color:#fff;border-radius:99px;padding:10px 18px;font-weight:800;z-index:9}
 #toast{opacity:0;transition:opacity .3s}#toast.on{opacity:1}
 @media(max-width:860px){.hero,.lobby,.stage{grid-template-columns:minmax(0,1fr)}.pic{aspect-ratio:1.6}.gallery{max-width:420px}}
@@ -2613,7 +2626,7 @@ ART.ecosac=()=>ART.sac().replace(/#8a959d/g,'#ffd84a').replace(/#6f7a82/g,'#f0b8
 
 const QUIZ={"id": "demo", "theme": "rencontre", "title": "Démo Quiz Live", "titleHtml": "Démo <span>Quiz Live</span>", "tagline": "Une petite partie pour essayer tous les types de questions : sondage, estimation, classement et nuage de mots.", "rulesNote": "Partie de démonstration : sondage, estimation, classement, nuage de mots", "finishNote": "Ces types de questions peuvent être utilisés dans n’importe quel quiz.", "winner": "Champion de la démo !", "winnerLine": "{nick} remporte la démo.", "podiumTitle": "Le podium de la démo", "nickPlaceholder": "Ton pseudo", "gallery": ["bulle", "loupe", "trophee", "podium", "eleve", "heart"], "avatars": ["fille1", "garcon1", "fille2", "garcon2", "fille3", "garcon3", "fille4", "garcon4", "fille5", "garcon5", "fille6", "garcon6", "chat", "chien", "renard", "panda", "hibou", "dino", "alien", "robot", "fantome", "etoile", "nuage", "cactus", "donut", "fusee", "bulle", "loupe", "trophee", "heart", "ballon", "maillot", "sifflet", "carton", "micro", "echarpe", "crampon", "score", "pizza", "yaourt", "tube", "banane", "bouteille", "pile", "capsule", "cereales", "bocal", "sac"], "lobbyArt": "bulle", "rounds": [{"title": "Le sondage", "text": "Pas de bonne ou de mauvaise réponse : les votes s’affichent en direct.", "art": "bulle", "tint": "#fff3c4"}, {"title": "Trouver un nombre", "text": "Tapez votre estimation. Plus vous êtes proche, plus vous marquez.", "art": "loupe", "tint": "#dff0ff"}, {"title": "Remettre dans l’ordre", "text": "Touchez les étiquettes dans le bon ordre, puis validez.", "art": "podium", "tint": "#e6f7ec"}, {"title": "Le nuage de mots", "text": "Un mot ou deux : le nuage grandit en direct sur le grand écran.", "art": "heart", "tint": "#ffe0e8"}], "questions": [{"round": 1, "art": "bulle", "name": "La promo", "sub": "sondage", "bio": "« Avouez tout, on ne juge pas. »", "type": "poll", "ask": "Chez vous, vous triez vos déchets…", "options": ["Toujours", "Souvent", "Parfois", "Jamais"], "time": 20}, {"round": 2, "art": "loupe", "name": "Les erreurs de tri", "sub": "Grand Nancy, bilan 2025", "bio": "« On se glisse au tri alors qu’on n’a rien à y faire. »", "type": "number", "ask": "Quel pourcentage d’erreurs de tri dans les emballages du Grand Nancy en 2025 ?", "answer": 14.2, "unit": "%", "tolerance": 0.6, "why": "14,2 % en 2025 : environ un déchet sur sept déposé avec les emballages n’avait rien à y faire."}, {"round": 2, "art": "trophee", "name": "Les ordures ménagères", "sub": "20 ans de régime", "bio": "« J’ai beaucoup maigri, et j’en suis fière. »", "type": "number", "ask": "En 20 ans, les ordures ménagères du Grand Nancy sont passées de 100 000 tonnes par an à combien ?", "answer": 69000, "unit": "tonnes", "tolerance": 0.4, "why": "69 000 tonnes par an, à population équivalente, selon la Métropole (chiffre de 2020)."}, {"round": 3, "art": "podium", "name": "Le voyage d’un emballage", "sub": "de la cuisine à l’usine", "bio": "« Je fais du chemin avant de renaître. »", "type": "order", "ask": "Remettez dans l’ordre le voyage d’un emballage", "items": ["Je le dépose dans l’écosac", "Le camion le collecte", "Le centre de tri le sépare par matière", "L’usine le recycle", "Il devient un nouvel objet"], "time": 40, "why": "Du geste de tri à l’usine de recyclage, chaque étape compte : une erreur au début peut faire refuser tout un lot."}, {"round": 4, "art": "heart", "name": "Le mot de la fin", "sub": "nuage de mots", "bio": "« Résumez-moi en un mot. »", "type": "cloud", "ask": "Un mot pour résumer ce quiz ?", "time": 30}], "sources": ["Métropole du Grand Nancy – guide du tri (mhdd.grandnancy.eu)", "Métropole du Grand Nancy – dossier de presse déchets 2020"]};
 const THEME={"fonts": "https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap", "logoArt": "heart", "goodArt": "heart", "badArt": "broken", "words": {"correct": "C’est un match !", "wrong": "Râteau…", "late": "Trop tard…", "online": "En ligne", "profileTitle": "Crée ton profil", "profileText": "Ton pseudo et ton avatar s’afficheront sur le grand écran : soigne ta première impression.", "inRoom": "Tu es dans la salle !", "inRoomText": "Ton pseudo s’affiche sur le grand écran. La partie va bientôt commencer.", "board": "Classement", "podium": "Le grand final", "endNeutral": "Fin des rencontres", "podiumPlayer": "Sur le podium !", "go": "C’est parti", "sent": "Réponse envoyée !", "watch": "Regarde le grand écran."}};
-const VER="5032867";
+const VER="2bcc52d";
 /* Moteur Quiz Live : grand écran (présentateur) + téléphones (joueurs), reliés en direct par PeerJS.
    Le contenu vient de QUIZ (quizzes/<id>/quiz.json) et l'habillage de THEME (themes/<nom>.json). */
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2683,7 +2696,7 @@ const fsBtn=()=>fsOk()?`<button class="fsb" data-fs title="Plein écran (touche 
 document.addEventListener('click',e=>{if(e.target.closest('[data-fs]'))toggleFS()});
 document.addEventListener('keydown',e=>{
  if(e.target.closest&&e.target.closest('input,textarea'))return;
- if(!H.peer)return;
+ if(!H.active)return;
  if(e.key==='f'||e.key==='F'){e.preventDefault();toggleFS();return}
  if([' ','Enter','ArrowRight','PageDown'].includes(e.key)){
   const b=['#go','#nx','#rv'].map(x=>$(x)).find(x=>x&&!x.disabled);
@@ -2698,16 +2711,45 @@ function home(){
  const g=(QUIZ.gallery||AVS.slice(0,6)).map((k,i)=>`<div style="--r:${[-4,3,-2,5,-3,2][i%6]}deg">${drawArt(k)}</div>`).join('');
  app.innerHTML=`<section class="hero"><div><h1>${QUIZ.titleHtml||esc(QUIZ.title)}</h1><p>${esc(QUIZ.tagline||'')} Le grand écran présente, les téléphones répondent, le classement tombe en direct.</p>
  <div class="btns"><button class="big" id="host">Je présente sur le grand écran</button></div>
+ <div class="nophone"><span>Sans téléphone :</span><button class="chip2" id="solo">Tester seul sur cet écran</button><button class="chip2" id="teams">Jouer en équipes</button></div>
  <form class="joinbox" id="jf"><label for="cd">Je joue : code de la partie</label><div class="row2"><input id="cd" inputmode="numeric" maxlength="4" placeholder="1234" autocomplete="off"><button class="big alt">Rejoindre</button></div></form></div>
  <div class="gallery">${g}</div></section>`;
- $('#host').onclick=hostInit;
+ $('#host').onclick=hostInit;$('#solo').onclick=soloInit;$('#teams').onclick=teamsSetup;
  $('#jf').onsubmit=e=>{e.preventDefault();const c=$('#cd').value.replace(/\D/g,'');if(c.length===4)joinForm(c)};
 }
 
 /* ---------- PRÉSENTATEUR ---------- */
-const H={peer:null,code:'',players:new Map(),phase:'lobby',i:0,t0:0,deadline:0,tick:null};
+const H={peer:null,code:'',players:new Map(),phase:'lobby',i:0,t0:0,deadline:0,tick:null,mode:'qr',active:false,ticks:{}};
+const TEAMS=['Les Éclairs','Les Comètes','Les Ouragans','Les Volcans','Les Tornades','Les Météores'];
+function soloInit(){
+ H.active=true;H.mode='solo';H.code='';H.players.clear();
+ H.players.set('local',{pid:'local',nick:'Moi',av:{k:AVS[Math.floor(Math.random()*Math.min(12,AVS.length))],c:0},local:true,score:0,ans:{},res:null,prev:0});
+ H.i=0;step();
+}
+function teamsSetup(n){
+ n=n||Number(store.get('ql-nteams'))||4;let names;try{names=JSON.parse(store.get('ql-teams'))||[]}catch(e){names=[]}
+ app.innerHTML=`<div class="lobtop">${fsBtn()}</div><section class="center">${logo}<h2>Jouer en équipes, sans téléphone</h2><p>Les équipes répondent à voix haute, sur une ardoise ou à main levée. Après chaque réponse, tu coches les équipes qui ont trouvé : le classement se met à jour tout seul.</p>
+ <div class="modes">${[2,3,4,5,6].map(k=>`<button class="chip2${k===n?' on':''}" data-n="${k}">${k} équipes</button>`).join('')}</div>
+ <form id="tf" class="tform">${Array.from({length:n},(_,i)=>`<input class="pseudo" id="tn${i}" maxlength="20" value="${esc(names[i]||TEAMS[i])}" aria-label="Nom de l’équipe ${i+1}">`).join('')}<button class="big">Commencer</button></form></section>`;
+ const save=()=>{const l=[];for(let i=0;i<n;i++){const e=$('#tn'+i);l.push(e?e.value.trim()||TEAMS[i]:TEAMS[i])}store.set('ql-teams',JSON.stringify(l));return l};
+ document.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{save();store.set('ql-nteams',b.dataset.n);teamsSetup(+b.dataset.n)});
+ $('#tf').onsubmit=e=>{e.preventDefault();const l=save();store.set('ql-nteams',n);
+  H.active=true;H.mode='teams';H.code='';H.players.clear();
+  l.forEach((nm,i)=>H.players.set('team'+i,{pid:'team'+i,nick:nm,av:{k:AVS[(i*5)%AVS.length],c:i%AVC.length},local:true,score:0,ans:{},res:null,prev:0}));
+  H.i=0;step()};
+}
+function recordAnswer(p,raw){
+ if(!p||H.phase!=='q'||p.ans[H.i])return false;
+ const q=Q[H.i],v=validAns(q,raw);if(v===null)return false;
+ p.ans[H.i]={v,ms:Date.now()-H.t0};send(p,{t:'got',i:H.i});hostCount();live();
+ const on=[...H.players.values()].filter(x=>x.local||(x.conn&&x.conn.open)),qi=H.i;
+ if(H.mode!=='teams'&&on.length&&on.every(x=>x.ans[H.i]))setTimeout(()=>{if(H.phase==='q'&&H.i===qi)reveal()},600);
+ return true;
+}
+function localAns(v){return recordAnswer(H.players.get('local'),v)}
 function hostInit(){
  if(!hasPeer())return;
+ H.active=true;H.mode='qr';
  H.code=String(Math.floor(1000+Math.random()*9000));
  app.innerHTML=`<section class="center">${logo}<h2>Création de la partie…</h2></section>`;
  const peer=new Peer(SRV+H.code,OPTS);H.peer=peer;
@@ -2728,11 +2770,7 @@ function hostData(c,d){
   if(H.phase==='lobby')lobby();else hostCount();return;
  }
  if(d.t==='ans'){
-  const p=H.players.get(c.pid);if(!p||H.phase!=='q'||d.i!==H.i||p.ans[H.i])return;
-  const q=Q[H.i],v=validAns(q,d.v);if(v===null)return;
-  p.ans[H.i]={v,ms:Date.now()-H.t0};send(p,{t:'got',i:H.i});hostCount();live();
-  const on=[...H.players.values()].filter(x=>x.conn&&x.conn.open),qi=H.i;
-  if(on.length&&on.every(x=>x.ans[H.i]))setTimeout(()=>{if(H.phase==='q'&&H.i===qi)reveal()},600);
+  if(d.i!==H.i)return;recordAnswer(H.players.get(c.pid),d.v);
  }
 }
 function live(){const q=Q[H.i];if(H.phase!=='q')return;const as=[...H.players.values()].map(p=>p.ans[H.i]).filter(Boolean);
@@ -2750,9 +2788,9 @@ function stateFor(p){
  if(H.phase==='end')return{t:'end',...endRes(p)};
  return p.res&&p.res.i===H.i?p.res:{t:'wait'};
 }
-function online(){return [...H.players.values()].filter(p=>p.conn&&p.conn.open).length}
-function hostCount(){const e=$('#cnt');if(!e)return;if(H.phase==='q'){const n=[...H.players.values()].filter(p=>p.ans[H.i]).length;e.textContent=`${n} / ${online()} réponses`}else e.textContent=`${online()} joueurs connectés`}
-function hostHead(){return `<div class="top">${logo}<span class="keys">Espace ou → pour avancer</span><span class="pill" id="cnt"></span><span class="pill">Code ${H.code}</span>${fsBtn()}</div>`}
+function online(){return [...H.players.values()].filter(p=>p.local||(p.conn&&p.conn.open)).length}
+function hostCount(){const e=$('#cnt');if(!e)return;if(H.mode==='teams'){e.textContent=`Mode équipes · ${H.players.size} équipes`;return}if(H.mode==='solo'){e.textContent='Mode test';return}if(H.phase==='q'){const n=[...H.players.values()].filter(p=>p.ans[H.i]).length;e.textContent=`${n} / ${online()} réponses`}else e.textContent=`${online()} joueurs connectés`}
+function hostHead(){return `<div class="top">${logo}<span class="keys">Espace ou → pour avancer</span><span class="pill" id="cnt"></span>${H.code?`<span class="pill">Code ${H.code}</span>`:''}${fsBtn()}</div>`}
 function lobby(){
  H.phase='lobby';
  const url=location.origin+location.pathname+'?p='+H.code;
@@ -2771,12 +2809,22 @@ function inter(){
 function question(){
  H.phase='q';const q=Q[H.i],M=R(q.round),lim=LIM(q);H.t0=Date.now();H.deadline=H.t0+lim;bc(stateFor);
  const os=optsOf(q),sw=q.type==='swipe'?SW(q):null;
- const body=q.type==='number'?`<div class="bignum" id="bn">?</div><p class="hint">Chacun tape son estimation${q.unit?' (en '+esc(q.unit)+')':''}. Plus on est proche, plus on marque.</p>`:q.type==='cloud'?`<div class="cloud" id="cloud">${cloudHtml([])}</div>`:q.type==='order'?`<ol class="olist" id="olist">${shuffleFor(H.i,q.items.length).map(k=>`<li>${esc(q.items[k])}</li>`).join('')}</ol><p class="hint">À remettre dans l’ordre sur les téléphones.</p>`:null;
+ const body=q.type==='number'?`<div class="bignum" id="bn">?</div>${H.mode==='solo'?`<form id="hnf" class="hform"><input id="hnv" class="pseudo" inputmode="decimal" autocomplete="off" placeholder="Ton estimation${q.unit?' ('+esc(q.unit)+')':''}"><button class="big">Valider</button></form>`:`<p class="hint">${H.mode==='teams'?'Chaque équipe annonce son estimation':'Chacun tape son estimation'}${q.unit?' (en '+esc(q.unit)+')':''}. Plus on est proche, plus on marque.</p>`}`:q.type==='cloud'?`<div class="cloud" id="cloud">${cloudHtml([])}</div>${H.mode==='solo'?`<form id="hcf" class="hform"><input id="hcv" class="pseudo" maxlength="25" autocomplete="off" placeholder="Un mot ou deux"><button class="big">Envoyer</button></form>`:''}`:q.type==='order'?`<ol class="olist" id="olist">${shuffleFor(H.i,q.items.length).map(k=>`<li data-k="${k}"><span class="onum"></span>${esc(q.items[k])}</li>`).join('')}</ol>${H.mode==='solo'?`<div class="obtns"><button class="big alt" id="hore">Recommencer</button><button class="big" id="hook" disabled>Valider l’ordre</button></div>`:`<p class="hint">${H.mode==='teams'?'Chaque équipe annonce son ordre.':'À remettre dans l’ordre sur les téléphones.'}</p>`}`:null;
  app.innerHTML=hostHead()+`<section class="stage"><article class="profile"><div class="pic" style="background:${M.tint||'#fff3c4'}">${artOf(q)}${W.online?`<span class="tag"><b></b>${esc(W.online)}</span>`:''}</div><div class="who"><h2>${esc(q.name||'')} ${q.sub?`<small>· ${esc(q.sub)}</small>`:''}</h2>${q.bio?`<p class="bio">${esc(q.bio)}</p>`:''}</div></article>
  <div class="panel"><div class="qh"><div><div class="manche">Question ${H.i+1} / ${Q.length} · ${esc(M.title)}${q.double?' · points doublés':''}</div><h3>${esc(ask(q))}</h3></div><div class="cd" id="cd">${lim/1000}</div></div>
  ${sw?`<p class="swhint">◀ Swipe à gauche : ${esc(sw.left.label)} · Swipe à droite : ${esc(sw.right.label)} ▶</p>`:''}${body!==null?body:`<div class="opts${os.length===2?' two':''}">${os.map((o,k)=>`<div class="opt" data-v="${o.v}" style="--c:${COLS[k]}">${o.icon||`<span class="sh">${k+1}</span>`}<span><b>${esc(o.label)}</b>${o.sub?`<small>${esc(o.sub)}</small>`:''}</span><span class="bar"><i></i></span><span class="nb"></span></div>`).join('')}</div>`}
  <div id="fb"></div><div class="next"><button class="big alt" id="rv">Révéler la réponse</button></div></div></section>`;
  hostCount();$('#rv').onclick=reveal;
+ if(H.mode==='teams')$('#rv').insertAdjacentHTML('beforebegin','<p class="hint tm">Les équipes répondent à voix haute, sur une ardoise ou à main levée.</p>');
+ if(H.mode==='solo'){
+  document.querySelectorAll('.opt').forEach(e=>{e.classList.add('click');e.onclick=()=>{if(localAns(e.dataset.v))e.classList.add('pick')}});
+  const nf=$('#hnf');if(nf){$('#hnv').focus();nf.onsubmit=ev=>{ev.preventDefault();const n=Number($('#hnv').value.replace(',','.').replace(/\s/g,''));if($('#hnv').value.trim()&&Number.isFinite(n)&&localAns(n))nf.innerHTML='<p class="hint">Estimation enregistrée.</p>'}}
+  const cf=$('#hcf');if(cf){$('#hcv').focus();cf.onsubmit=ev=>{ev.preventDefault();const w=$('#hcv').value.trim();if(w&&localAns(w))cf.innerHTML='<p class="hint">Réponse enregistrée.</p>'}}
+  if(q.type==='order'){let seq=[];const li=[...document.querySelectorAll('#olist li')],ok=$('#hook');
+   const paint=()=>{li.forEach(x=>{const k=+x.dataset.k,pos=seq.indexOf(k);x.classList.toggle('on',pos>=0);x.querySelector('.onum').textContent=pos>=0?pos+1:''});ok.disabled=seq.length!==li.length};
+   li.forEach(x=>{x.classList.add('click');x.onclick=()=>{const k=+x.dataset.k;if(!seq.includes(k))seq.push(k);paint()}});
+   $('#hore').onclick=()=>{seq=[];paint()};ok.onclick=()=>{if(localAns(seq)){const b=document.querySelector('.obtns');if(b)b.remove()}}}
+ }
  clearInterval(H.tick);H.tick=setInterval(()=>{const r=Math.max(0,Math.ceil((H.deadline-Date.now())/1000));const e=$('#cd');if(e)e.textContent=r;if(r<=0)reveal()},200);
 }
 function reveal(){
@@ -2798,12 +2846,16 @@ function reveal(){
  if(q.type==='cloud'){const c=$('#cloud');if(c)c.innerHTML=cloudHtml([...H.players.values()].map(p=>p.ans[H.i]).filter(Boolean).map(a=>a.v))}
  if(NOPTS(q.type))head=`${tot} réponse${tot>1?'s':''}`;
  $('#fb').innerHTML=`<div class="fb"><h4>${good()}${head}</h4>${q.why?`<p>${esc(q.why)}</p>`:''}${extra}</div>`;
+ if(H.mode==='teams'&&!NOPTS(q.type)){H.ticks={};
+  $('#fb').insertAdjacentHTML('beforeend',`<div class="tticks"><b>${q.type==='number'?'Quelle équipe était la plus proche ?':'Quelles équipes ont trouvé ?'}</b><div>${[...H.players.values()].map(p=>`<button class="chip2" data-t="${p.pid}">${avatar(p.av,'avs')}${esc(p.nick)}</button>`).join('')}</div></div>`);
+  document.querySelectorAll('[data-t]').forEach(x=>x.onclick=()=>{const t=x.dataset.t;H.ticks[t]=!H.ticks[t];x.classList.toggle('on',H.ticks[t])})}
  const b=$('#rv'),last=H.i===Q.length-1;b.className='big';
  if(NOPTS(q.type)){b.textContent=last?'Voir le podium':'Question suivante';b.onclick=()=>{H.i++;step()}}
  else{b.textContent='Voir le classement';b.onclick=board}
 }
 function board(){
- H.phase='board';const r=ranked().slice(0,5),last=H.i===Q.length-1,ST=88;
+ if(H.mode==='teams'&&H.phase==='rev'){const q=Q[H.i],m=q.double?2:1;H.players.forEach(p=>{const g=H.ticks[p.pid]?1000*m:0;p.score+=g;p.last=g})}
+ H.phase='board';const r=ranked().slice(0,H.mode==='teams'?6:5),last=H.i===Q.length-1,ST=88;
  const rows=r.map((p,k)=>{const from=Number.isInteger(p.prev)&&p.prev>=0?p.prev:99,start=Math.min(from,5),d=from<99?from-k:0;
   return `<div class="rk" data-to="${k}" style="top:${start*ST}px;${from<5?'':'opacity:0'}"><span class="pos">${from<5?from+1:'–'}</span>${avatar(p.av)}<span class="nm">${esc(p.nick)}</span>${p.last?`<span class="gn">+${p.last}</span>`:''}<span class="sc" data-a="${p.score-(p.last||0)}" data-b="${p.score}">${p.score-(p.last||0)}</span><span class="dl ${d>0?'up':d<0?'down':''}">${d>0?'▲'+d:d<0?'▼'+(-d):''}</span></div>`}).join('');
  app.innerHTML=hostHead()+`<section class="board"><h2>${esc(W.board)}</h2><div class="rows anim" style="height:${Math.max(1,r.length)*ST-12}px">${rows||'<p class="hint">Aucun joueur.</p>'}</div><button class="big" id="nx">${last?'Voir le podium':'Question suivante'}</button></section>`;

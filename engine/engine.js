@@ -67,7 +67,7 @@ const fsBtn=()=>fsOk()?`<button class="fsb" data-fs title="Plein écran (touche 
 document.addEventListener('click',e=>{if(e.target.closest('[data-fs]'))toggleFS()});
 document.addEventListener('keydown',e=>{
  if(e.target.closest&&e.target.closest('input,textarea'))return;
- if(!H.peer)return;
+ if(!H.active)return;
  if(e.key==='f'||e.key==='F'){e.preventDefault();toggleFS();return}
  if([' ','Enter','ArrowRight','PageDown'].includes(e.key)){
   const b=['#go','#nx','#rv'].map(x=>$(x)).find(x=>x&&!x.disabled);
@@ -82,16 +82,45 @@ function home(){
  const g=(QUIZ.gallery||AVS.slice(0,6)).map((k,i)=>`<div style="--r:${[-4,3,-2,5,-3,2][i%6]}deg">${drawArt(k)}</div>`).join('');
  app.innerHTML=`<section class="hero"><div><h1>${QUIZ.titleHtml||esc(QUIZ.title)}</h1><p>${esc(QUIZ.tagline||'')} Le grand écran présente, les téléphones répondent, le classement tombe en direct.</p>
  <div class="btns"><button class="big" id="host">Je présente sur le grand écran</button></div>
+ <div class="nophone"><span>Sans téléphone :</span><button class="chip2" id="solo">Tester seul sur cet écran</button><button class="chip2" id="teams">Jouer en équipes</button></div>
  <form class="joinbox" id="jf"><label for="cd">Je joue : code de la partie</label><div class="row2"><input id="cd" inputmode="numeric" maxlength="4" placeholder="1234" autocomplete="off"><button class="big alt">Rejoindre</button></div></form></div>
  <div class="gallery">${g}</div></section>`;
- $('#host').onclick=hostInit;
+ $('#host').onclick=hostInit;$('#solo').onclick=soloInit;$('#teams').onclick=teamsSetup;
  $('#jf').onsubmit=e=>{e.preventDefault();const c=$('#cd').value.replace(/\D/g,'');if(c.length===4)joinForm(c)};
 }
 
 /* ---------- PRÉSENTATEUR ---------- */
-const H={peer:null,code:'',players:new Map(),phase:'lobby',i:0,t0:0,deadline:0,tick:null};
+const H={peer:null,code:'',players:new Map(),phase:'lobby',i:0,t0:0,deadline:0,tick:null,mode:'qr',active:false,ticks:{}};
+const TEAMS=['Les Éclairs','Les Comètes','Les Ouragans','Les Volcans','Les Tornades','Les Météores'];
+function soloInit(){
+ H.active=true;H.mode='solo';H.code='';H.players.clear();
+ H.players.set('local',{pid:'local',nick:'Moi',av:{k:AVS[Math.floor(Math.random()*Math.min(12,AVS.length))],c:0},local:true,score:0,ans:{},res:null,prev:0});
+ H.i=0;step();
+}
+function teamsSetup(n){
+ n=n||Number(store.get('ql-nteams'))||4;let names;try{names=JSON.parse(store.get('ql-teams'))||[]}catch(e){names=[]}
+ app.innerHTML=`<div class="lobtop">${fsBtn()}</div><section class="center">${logo}<h2>Jouer en équipes, sans téléphone</h2><p>Les équipes répondent à voix haute, sur une ardoise ou à main levée. Après chaque réponse, tu coches les équipes qui ont trouvé : le classement se met à jour tout seul.</p>
+ <div class="modes">${[2,3,4,5,6].map(k=>`<button class="chip2${k===n?' on':''}" data-n="${k}">${k} équipes</button>`).join('')}</div>
+ <form id="tf" class="tform">${Array.from({length:n},(_,i)=>`<input class="pseudo" id="tn${i}" maxlength="20" value="${esc(names[i]||TEAMS[i])}" aria-label="Nom de l’équipe ${i+1}">`).join('')}<button class="big">Commencer</button></form></section>`;
+ const save=()=>{const l=[];for(let i=0;i<n;i++){const e=$('#tn'+i);l.push(e?e.value.trim()||TEAMS[i]:TEAMS[i])}store.set('ql-teams',JSON.stringify(l));return l};
+ document.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{save();store.set('ql-nteams',b.dataset.n);teamsSetup(+b.dataset.n)});
+ $('#tf').onsubmit=e=>{e.preventDefault();const l=save();store.set('ql-nteams',n);
+  H.active=true;H.mode='teams';H.code='';H.players.clear();
+  l.forEach((nm,i)=>H.players.set('team'+i,{pid:'team'+i,nick:nm,av:{k:AVS[(i*5)%AVS.length],c:i%AVC.length},local:true,score:0,ans:{},res:null,prev:0}));
+  H.i=0;step()};
+}
+function recordAnswer(p,raw){
+ if(!p||H.phase!=='q'||p.ans[H.i])return false;
+ const q=Q[H.i],v=validAns(q,raw);if(v===null)return false;
+ p.ans[H.i]={v,ms:Date.now()-H.t0};send(p,{t:'got',i:H.i});hostCount();live();
+ const on=[...H.players.values()].filter(x=>x.local||(x.conn&&x.conn.open)),qi=H.i;
+ if(H.mode!=='teams'&&on.length&&on.every(x=>x.ans[H.i]))setTimeout(()=>{if(H.phase==='q'&&H.i===qi)reveal()},600);
+ return true;
+}
+function localAns(v){return recordAnswer(H.players.get('local'),v)}
 function hostInit(){
  if(!hasPeer())return;
+ H.active=true;H.mode='qr';
  H.code=String(Math.floor(1000+Math.random()*9000));
  app.innerHTML=`<section class="center">${logo}<h2>Création de la partie…</h2></section>`;
  const peer=new Peer(SRV+H.code,OPTS);H.peer=peer;
@@ -112,11 +141,7 @@ function hostData(c,d){
   if(H.phase==='lobby')lobby();else hostCount();return;
  }
  if(d.t==='ans'){
-  const p=H.players.get(c.pid);if(!p||H.phase!=='q'||d.i!==H.i||p.ans[H.i])return;
-  const q=Q[H.i],v=validAns(q,d.v);if(v===null)return;
-  p.ans[H.i]={v,ms:Date.now()-H.t0};send(p,{t:'got',i:H.i});hostCount();live();
-  const on=[...H.players.values()].filter(x=>x.conn&&x.conn.open),qi=H.i;
-  if(on.length&&on.every(x=>x.ans[H.i]))setTimeout(()=>{if(H.phase==='q'&&H.i===qi)reveal()},600);
+  if(d.i!==H.i)return;recordAnswer(H.players.get(c.pid),d.v);
  }
 }
 function live(){const q=Q[H.i];if(H.phase!=='q')return;const as=[...H.players.values()].map(p=>p.ans[H.i]).filter(Boolean);
@@ -134,9 +159,9 @@ function stateFor(p){
  if(H.phase==='end')return{t:'end',...endRes(p)};
  return p.res&&p.res.i===H.i?p.res:{t:'wait'};
 }
-function online(){return [...H.players.values()].filter(p=>p.conn&&p.conn.open).length}
-function hostCount(){const e=$('#cnt');if(!e)return;if(H.phase==='q'){const n=[...H.players.values()].filter(p=>p.ans[H.i]).length;e.textContent=`${n} / ${online()} réponses`}else e.textContent=`${online()} joueurs connectés`}
-function hostHead(){return `<div class="top">${logo}<span class="keys">Espace ou → pour avancer</span><span class="pill" id="cnt"></span><span class="pill">Code ${H.code}</span>${fsBtn()}</div>`}
+function online(){return [...H.players.values()].filter(p=>p.local||(p.conn&&p.conn.open)).length}
+function hostCount(){const e=$('#cnt');if(!e)return;if(H.mode==='teams'){e.textContent=`Mode équipes · ${H.players.size} équipes`;return}if(H.mode==='solo'){e.textContent='Mode test';return}if(H.phase==='q'){const n=[...H.players.values()].filter(p=>p.ans[H.i]).length;e.textContent=`${n} / ${online()} réponses`}else e.textContent=`${online()} joueurs connectés`}
+function hostHead(){return `<div class="top">${logo}<span class="keys">Espace ou → pour avancer</span><span class="pill" id="cnt"></span>${H.code?`<span class="pill">Code ${H.code}</span>`:''}${fsBtn()}</div>`}
 function lobby(){
  H.phase='lobby';
  const url=location.origin+location.pathname+'?p='+H.code;
@@ -155,12 +180,22 @@ function inter(){
 function question(){
  H.phase='q';const q=Q[H.i],M=R(q.round),lim=LIM(q);H.t0=Date.now();H.deadline=H.t0+lim;bc(stateFor);
  const os=optsOf(q),sw=q.type==='swipe'?SW(q):null;
- const body=q.type==='number'?`<div class="bignum" id="bn">?</div><p class="hint">Chacun tape son estimation${q.unit?' (en '+esc(q.unit)+')':''}. Plus on est proche, plus on marque.</p>`:q.type==='cloud'?`<div class="cloud" id="cloud">${cloudHtml([])}</div>`:q.type==='order'?`<ol class="olist" id="olist">${shuffleFor(H.i,q.items.length).map(k=>`<li>${esc(q.items[k])}</li>`).join('')}</ol><p class="hint">À remettre dans l’ordre sur les téléphones.</p>`:null;
+ const body=q.type==='number'?`<div class="bignum" id="bn">?</div>${H.mode==='solo'?`<form id="hnf" class="hform"><input id="hnv" class="pseudo" inputmode="decimal" autocomplete="off" placeholder="Ton estimation${q.unit?' ('+esc(q.unit)+')':''}"><button class="big">Valider</button></form>`:`<p class="hint">${H.mode==='teams'?'Chaque équipe annonce son estimation':'Chacun tape son estimation'}${q.unit?' (en '+esc(q.unit)+')':''}. Plus on est proche, plus on marque.</p>`}`:q.type==='cloud'?`<div class="cloud" id="cloud">${cloudHtml([])}</div>${H.mode==='solo'?`<form id="hcf" class="hform"><input id="hcv" class="pseudo" maxlength="25" autocomplete="off" placeholder="Un mot ou deux"><button class="big">Envoyer</button></form>`:''}`:q.type==='order'?`<ol class="olist" id="olist">${shuffleFor(H.i,q.items.length).map(k=>`<li data-k="${k}"><span class="onum"></span>${esc(q.items[k])}</li>`).join('')}</ol>${H.mode==='solo'?`<div class="obtns"><button class="big alt" id="hore">Recommencer</button><button class="big" id="hook" disabled>Valider l’ordre</button></div>`:`<p class="hint">${H.mode==='teams'?'Chaque équipe annonce son ordre.':'À remettre dans l’ordre sur les téléphones.'}</p>`}`:null;
  app.innerHTML=hostHead()+`<section class="stage"><article class="profile"><div class="pic" style="background:${M.tint||'#fff3c4'}">${artOf(q)}${W.online?`<span class="tag"><b></b>${esc(W.online)}</span>`:''}</div><div class="who"><h2>${esc(q.name||'')} ${q.sub?`<small>· ${esc(q.sub)}</small>`:''}</h2>${q.bio?`<p class="bio">${esc(q.bio)}</p>`:''}</div></article>
  <div class="panel"><div class="qh"><div><div class="manche">Question ${H.i+1} / ${Q.length} · ${esc(M.title)}${q.double?' · points doublés':''}</div><h3>${esc(ask(q))}</h3></div><div class="cd" id="cd">${lim/1000}</div></div>
  ${sw?`<p class="swhint">◀ Swipe à gauche : ${esc(sw.left.label)} · Swipe à droite : ${esc(sw.right.label)} ▶</p>`:''}${body!==null?body:`<div class="opts${os.length===2?' two':''}">${os.map((o,k)=>`<div class="opt" data-v="${o.v}" style="--c:${COLS[k]}">${o.icon||`<span class="sh">${k+1}</span>`}<span><b>${esc(o.label)}</b>${o.sub?`<small>${esc(o.sub)}</small>`:''}</span><span class="bar"><i></i></span><span class="nb"></span></div>`).join('')}</div>`}
  <div id="fb"></div><div class="next"><button class="big alt" id="rv">Révéler la réponse</button></div></div></section>`;
  hostCount();$('#rv').onclick=reveal;
+ if(H.mode==='teams')$('#rv').insertAdjacentHTML('beforebegin','<p class="hint tm">Les équipes répondent à voix haute, sur une ardoise ou à main levée.</p>');
+ if(H.mode==='solo'){
+  document.querySelectorAll('.opt').forEach(e=>{e.classList.add('click');e.onclick=()=>{if(localAns(e.dataset.v))e.classList.add('pick')}});
+  const nf=$('#hnf');if(nf){$('#hnv').focus();nf.onsubmit=ev=>{ev.preventDefault();const n=Number($('#hnv').value.replace(',','.').replace(/\s/g,''));if($('#hnv').value.trim()&&Number.isFinite(n)&&localAns(n))nf.innerHTML='<p class="hint">Estimation enregistrée.</p>'}}
+  const cf=$('#hcf');if(cf){$('#hcv').focus();cf.onsubmit=ev=>{ev.preventDefault();const w=$('#hcv').value.trim();if(w&&localAns(w))cf.innerHTML='<p class="hint">Réponse enregistrée.</p>'}}
+  if(q.type==='order'){let seq=[];const li=[...document.querySelectorAll('#olist li')],ok=$('#hook');
+   const paint=()=>{li.forEach(x=>{const k=+x.dataset.k,pos=seq.indexOf(k);x.classList.toggle('on',pos>=0);x.querySelector('.onum').textContent=pos>=0?pos+1:''});ok.disabled=seq.length!==li.length};
+   li.forEach(x=>{x.classList.add('click');x.onclick=()=>{const k=+x.dataset.k;if(!seq.includes(k))seq.push(k);paint()}});
+   $('#hore').onclick=()=>{seq=[];paint()};ok.onclick=()=>{if(localAns(seq)){const b=document.querySelector('.obtns');if(b)b.remove()}}}
+ }
  clearInterval(H.tick);H.tick=setInterval(()=>{const r=Math.max(0,Math.ceil((H.deadline-Date.now())/1000));const e=$('#cd');if(e)e.textContent=r;if(r<=0)reveal()},200);
 }
 function reveal(){
@@ -182,12 +217,16 @@ function reveal(){
  if(q.type==='cloud'){const c=$('#cloud');if(c)c.innerHTML=cloudHtml([...H.players.values()].map(p=>p.ans[H.i]).filter(Boolean).map(a=>a.v))}
  if(NOPTS(q.type))head=`${tot} réponse${tot>1?'s':''}`;
  $('#fb').innerHTML=`<div class="fb"><h4>${good()}${head}</h4>${q.why?`<p>${esc(q.why)}</p>`:''}${extra}</div>`;
+ if(H.mode==='teams'&&!NOPTS(q.type)){H.ticks={};
+  $('#fb').insertAdjacentHTML('beforeend',`<div class="tticks"><b>${q.type==='number'?'Quelle équipe était la plus proche ?':'Quelles équipes ont trouvé ?'}</b><div>${[...H.players.values()].map(p=>`<button class="chip2" data-t="${p.pid}">${avatar(p.av,'avs')}${esc(p.nick)}</button>`).join('')}</div></div>`);
+  document.querySelectorAll('[data-t]').forEach(x=>x.onclick=()=>{const t=x.dataset.t;H.ticks[t]=!H.ticks[t];x.classList.toggle('on',H.ticks[t])})}
  const b=$('#rv'),last=H.i===Q.length-1;b.className='big';
  if(NOPTS(q.type)){b.textContent=last?'Voir le podium':'Question suivante';b.onclick=()=>{H.i++;step()}}
  else{b.textContent='Voir le classement';b.onclick=board}
 }
 function board(){
- H.phase='board';const r=ranked().slice(0,5),last=H.i===Q.length-1,ST=88;
+ if(H.mode==='teams'&&H.phase==='rev'){const q=Q[H.i],m=q.double?2:1;H.players.forEach(p=>{const g=H.ticks[p.pid]?1000*m:0;p.score+=g;p.last=g})}
+ H.phase='board';const r=ranked().slice(0,H.mode==='teams'?6:5),last=H.i===Q.length-1,ST=88;
  const rows=r.map((p,k)=>{const from=Number.isInteger(p.prev)&&p.prev>=0?p.prev:99,start=Math.min(from,5),d=from<99?from-k:0;
   return `<div class="rk" data-to="${k}" style="top:${start*ST}px;${from<5?'':'opacity:0'}"><span class="pos">${from<5?from+1:'–'}</span>${avatar(p.av)}<span class="nm">${esc(p.nick)}</span>${p.last?`<span class="gn">+${p.last}</span>`:''}<span class="sc" data-a="${p.score-(p.last||0)}" data-b="${p.score}">${p.score-(p.last||0)}</span><span class="dl ${d>0?'up':d<0?'down':''}">${d>0?'▲'+d:d<0?'▼'+(-d):''}</span></div>`}).join('');
  app.innerHTML=hostHead()+`<section class="board"><h2>${esc(W.board)}</h2><div class="rows anim" style="height:${Math.max(1,r.length)*ST-12}px">${rows||'<p class="hint">Aucun joueur.</p>'}</div><button class="big" id="nx">${last?'Voir le podium':'Question suivante'}</button></section>`;

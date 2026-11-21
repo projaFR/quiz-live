@@ -40,6 +40,12 @@ Champs principaux : `id`, `theme`, `title`, `titleHtml` (option, `<span>` = 2e c
   - une explication (`why`), un énoncé ou une option ne doivent pas révéler la réponse d'une question PLUS LOIN dans le quiz (ex. : citer le 2e d'un classement avant la question « remettez le classement dans l'ordre », donner un total de points avant la question « combien de points ? ») ;
   - avant de construire, relire tout le quiz dans l'ordre de jeu en se demandant à chaque question : « qu'est-ce que le joueur a déjà vu ? » et corriger.
 
+## Modes de jeu (tous les quiz)
+- **QR code** (par défaut) : téléphones reliés par PeerJS.
+- **Tester seul sur cet écran** (`soloInit`) : un joueur local « Moi » répond en cliquant sur le grand écran (options, champ nombre/mot, étiquettes à ordonner). Pas de réseau nécessaire.
+- **Jouer en équipes** (`teamsSetup`) : 2 à 6 équipes nommées, sans téléphone ; les équipes répondent à voix haute/ardoise ; après la révélation le présentateur coche les équipes qui ont trouvé (nombre : la plus proche) → 1 000 points (× 2 si `double`), appliqués en passant au classement.
+- Les joueurs locaux ont `local:true` (comptés comme connectés). Tester ces modes : `CHROME=/usr/bin/google-chrome python3 tools/test_offline.py <id>`.
+
 ## Construire, tester, publier
 1. `python3 tools/build.py` (vérifie le quiz et s'arrête sur la première erreur ; affiche la version).
 2. Test complet : `cd tools && npm install` (une fois), puis `CHROME=/usr/bin/google-chrome python3 tools/test_live.py <id>` (serveur PeerJS local + 3 joueurs simulés ; captures /tmp/ql-*.png). Regarder les captures.

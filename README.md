@@ -10,5 +10,8 @@ Des quiz en direct, façon Kahoot : le **grand écran** présente, les **télép
 2. Les joueurs **coupent le wifi**, passent en 4G/5G et scannent le QR code.
 3. **Espace**, **Entrée** ou **→** pour avancer (une télécommande de présentation marche aussi).
 
+## Sans téléphone
+Sur la page d'un quiz : **Tester seul sur cet écran** (on clique les réponses sur l'ordinateur) ou **Jouer en équipes** (les équipes répondent à voix haute, le présentateur coche celles qui ont trouvé).
+
 ## Créer un nouveau quiz
 Demander à Claude : « Crée un quiz Quiz Live sur … ». Chaque quiz est un dossier `quizzes/<nom>/` (contenu + dessins) ; le moteur et les thèmes sont partagés.
